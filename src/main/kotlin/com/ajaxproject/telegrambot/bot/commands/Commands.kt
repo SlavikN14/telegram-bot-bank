@@ -14,7 +14,6 @@ class StartAbstractCommand : AbstractCommand(START) {
             .chatId("${update.message.chatId}")
             .text("Hello")
             .build()
-        sendMessage(message,absSender)
+        sendMessage(message, absSender)
     }
 }
-

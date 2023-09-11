@@ -23,11 +23,11 @@ class BankInfoBot(
     override fun getBotUsername(): String = botUsername
     override fun getBotToken(): String = token
 
-    override fun onUpdateReceived(update: Update?) {
-        if (update?.hasMessage() == true) {
+    override fun onUpdateReceived(update: Update) {
+        if (update.hasMessage()) {
             val text = update.message.text
             commandsMapping[text]?.handle(update, this)
-        } else if (update?.hasCallbackQuery() == true) {
+        } else if (update.hasCallbackQuery()) {
             val callBack = update.callbackQuery.data
             log.debug("New request with callbackQuery: {}", callBack)
             commandsMapping[callBack]?.handle(update, this)
