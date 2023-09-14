@@ -1,4 +1,8 @@
-credentials:
-  botUsername: BankInfoBot
-  botToken: #secret
+bot:
+  token: #secret
+  username: BankInfoBot
+
+text:
+  path: src/main/resources/texts/
+  fileName: texts.properties
 
