@@ -9,18 +9,21 @@ import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.utils.Id
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import com.ajaxproject.telegrambot.bot.utils.TextsUtils
+import com.ajaxproject.telegrambot.bot.utils.isTextMessage
 import org.springframework.stereotype.Component
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton
+
+const val CURRENCY = "/currency"
 
 @Component
 class TextEnteredHandler(
     val telegramService: TelegramService,
     val text: TextsUtils,
     val userSessionService: UserSessionService,
-) : UserRequestHandler() {
+) : UserRequestHandler {
+
     override fun isApplicable(request: UserRequest): Boolean {
-        return (isTextMessage(request.update)) &&
-            (ConversationState.WAITING_FOR_TEXT == request.userSession.state)
+        return ConversationState.WAITING_FOR_TEXT == request.userSession.state &&
+            request.update.isTextMessage()
     }
 
     override fun handle(dispatchRequest: UserRequest) {
@@ -28,16 +31,19 @@ class TextEnteredHandler(
         telegramService.sendMessage(
             dispatchRequest.chatId,
             textFromUser + text.getText(Id.FUNCTIONS),
-            KeyboardUtils.replyKeyboard(
-                KeyboardUtils.rowReplyKeyboard(KeyboardButton("Currency"))
+            KeyboardUtils.inlineKeyboard(
+                KeyboardUtils.inlineRowKeyboard(
+                    listOf(KeyboardUtils.inlineButton("Get Currency", CURRENCY))
+                )
             )
         )
 
-        val session: UserSession = dispatchRequest.userSession
-        session.text = textFromUser
-        session.state = ConversationState.CONVERSATION_STARTED
+        val session: UserSession = dispatchRequest.userSession.apply {
+            text = textFromUser
+            state = ConversationState.CONVERSATION_STARTED
+        }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
 
-    override fun isGlobal(): Boolean = false
+    override val isGlobal: Boolean = false
 }

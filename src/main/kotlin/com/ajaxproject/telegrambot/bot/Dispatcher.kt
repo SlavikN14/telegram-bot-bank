@@ -16,12 +16,9 @@ class Dispatcher(
     }
 
     fun dispatch(userRequest: UserRequest): Boolean {
-        for (userRequestHandler in handlers) {
-            if (userRequestHandler.isApplicable(userRequest)) {
-                userRequestHandler.handle(userRequest)
-                return true
-            }
-        }
-        return false
+        return handlers.firstOrNull { it.isApplicable(userRequest) }?.run {
+            handle(userRequest)
+            true
+        } ?: false
     }
 }

@@ -10,14 +10,13 @@ import com.ajaxproject.telegrambot.bot.utils.Id
 import com.ajaxproject.telegrambot.bot.utils.TextsUtils
 import org.springframework.stereotype.Component
 
-const val START = "/start"
-
 @Component
 class StartCommandHandler(
     val telegramService: TelegramService,
     val text: TextsUtils,
     val userSessionService: UserSessionService,
-) : UserRequestHandler() {
+) : UserRequestHandler {
+
     override fun isApplicable(request: UserRequest): Boolean {
         return isCommand(request.update, START)
     }
@@ -32,5 +31,9 @@ class StartCommandHandler(
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
 
-    override fun isGlobal(): Boolean = true
+    override val isGlobal: Boolean = true
+
+    companion object {
+        const val START = "/start"
+    }
 }

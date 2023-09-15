@@ -12,6 +12,9 @@ object KeyboardUtils {
             .keyboard(rows)
             .build()
     }
+    fun inlineRowKeyboard(vararg row: List<InlineKeyboardButton>): List<List<InlineKeyboardButton>> {
+        return listOf(*row)
+    }
 
     fun inlineButton(name: String, callbackData: String): InlineKeyboardButton {
         return InlineKeyboardButton.builder()
@@ -28,7 +31,7 @@ object KeyboardUtils {
             .build()
     }
 
-    fun rowReplyKeyboard(vararg buttons: KeyboardButton): KeyboardRow {
-        return KeyboardRow(buttons.toList())
+    fun rowReplyKeyboard(buttons: List<KeyboardButton>): KeyboardRow {
+        return KeyboardRow(buttons)
     }
 }

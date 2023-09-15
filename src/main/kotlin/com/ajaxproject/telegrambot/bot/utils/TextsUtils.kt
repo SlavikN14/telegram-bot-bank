@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.telegram.telegrambots.meta.api.objects.Update
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -21,13 +22,12 @@ class TextsUtils(
     @Value("\${text.fileName}")
     val fileName: String
 ) {
+
     private val textsMap: MutableMap<String, Properties> = mutableMapOf()
 
     fun getText(id: Id): String {
-        val text = textsMap[fileName]!!.getProperty(id.name)
-        return text
-            ?: textsMap[fileName]!!
-                .getProperty(id.name)
+        return textsMap[fileName]?.getProperty(id.name)
+            ?: throw FileNameNotFoundException("File name $fileName not found")
     }
 
     @PostConstruct
@@ -57,3 +57,13 @@ class TextsUtils(
         private val log = LoggerFactory.getLogger(TextsUtils::class.java)
     }
 }
+
+fun Update.isTextMessage(): Boolean {
+    return this.hasMessage() && this.message.hasText()
+}
+
+fun Update.isTextMessage(text: String): Boolean {
+    return this.hasMessage() && this.message.hasText() && this.message.text.equals(text)
+}
+
+class FileNameNotFoundException(message: String) : Exception(message)
