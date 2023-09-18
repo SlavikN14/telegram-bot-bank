@@ -1,5 +1,7 @@
 package com.ajaxproject.telegrambot.bot.utils
 
+import com.ajaxproject.telegrambot.bot.properties.BotProperties
+import com.ajaxproject.telegrambot.bot.properties.TextProperties
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -17,22 +19,20 @@ enum class Id {
 
 @Component
 class TextsUtils(
-    @Value("\${text.path}")
-    val path: String,
-    @Value("\${text.fileName}")
-    val fileName: String
+   val textProperties : TextProperties
 ) {
 
     private val textsMap: MutableMap<String, Properties> = mutableMapOf()
 
+
     fun getText(id: Id): String {
-        return textsMap[fileName]?.getProperty(id.name)
-            ?: throw FileNameNotFoundException("File name $fileName not found")
+        return textsMap[textProperties.fileName]?.getProperty(id.name)
+            ?: throw FileNameNotFoundException("File name ${textProperties.fileName} not found")
     }
 
     @PostConstruct
     fun readTexts() {
-        val dir = File(path)
+        val dir = File(textProperties.path)
         if (dir.isDirectory()) {
             dir.listFiles()!!
                 .filter { obj: File -> obj.isFile() }
@@ -58,12 +58,8 @@ class TextsUtils(
     }
 }
 
-fun Update.isTextMessage(): Boolean {
-    return this.hasMessage() && this.message.hasText()
-}
+fun Update.isTextMessage(): Boolean = hasMessage() && message.hasText()
 
-fun Update.isTextMessage(text: String): Boolean {
-    return this.hasMessage() && this.message.hasText() && this.message.text.equals(text)
-}
+fun Update.isTextMessage(text: String): Boolean = hasMessage() && message.hasText() && message.text.equals(text)
 
 class FileNameNotFoundException(message: String) : Exception(message)
