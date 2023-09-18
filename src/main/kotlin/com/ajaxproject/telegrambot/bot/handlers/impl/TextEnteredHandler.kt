@@ -1,5 +1,7 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
+import com.ajaxproject.telegrambot.annotations.VeryPoliteCommand
+import com.ajaxproject.telegrambot.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.enums.ConversationState
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.model.UserRequest
@@ -12,9 +14,8 @@ import com.ajaxproject.telegrambot.bot.utils.TextsUtils
 import com.ajaxproject.telegrambot.bot.utils.isTextMessage
 import org.springframework.stereotype.Component
 
-const val CURRENCY = "/currency"
-
 @Component
+@VeryPoliteCommand
 class TextEnteredHandler(
     val telegramService: TelegramService,
     val text: TextsUtils,
@@ -23,21 +24,20 @@ class TextEnteredHandler(
 
     override fun isApplicable(request: UserRequest): Boolean {
         return ConversationState.WAITING_FOR_TEXT == request.userSession.state &&
-            request.update.isTextMessage()
+                request.update.isTextMessage()
     }
-
+    @VeryPoliteCommandHandler
     override fun handle(dispatchRequest: UserRequest) {
         val textFromUser = dispatchRequest.update.message.text
         telegramService.sendMessage(
-            dispatchRequest.chatId,
-            textFromUser + text.getText(Id.FUNCTIONS),
-            KeyboardUtils.inlineKeyboard(
+            chatId = dispatchRequest.chatId,
+            text = textFromUser + text.getText(Id.FUNCTIONS),
+            replyKeyboard = KeyboardUtils.inlineKeyboard(
                 KeyboardUtils.inlineRowKeyboard(
                     listOf(KeyboardUtils.inlineButton("Get Currency", CURRENCY))
                 )
             )
         )
-
         val session: UserSession = dispatchRequest.userSession.apply {
             text = textFromUser
             state = ConversationState.CONVERSATION_STARTED
@@ -46,4 +46,8 @@ class TextEnteredHandler(
     }
 
     override val isGlobal: Boolean = false
+
+    companion object {
+        const val CURRENCY = "/currency"
+    }
 }
