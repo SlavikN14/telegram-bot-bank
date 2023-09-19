@@ -31,8 +31,7 @@ class VeryPoliteCommandHandlerBeanPostProcessor : BeanPostProcessor {
     }
 
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
-        val beanClass = beans[beanName]
-        return beanClass?.let {
+        return beans[beanName]?.let { beanClass ->
             Proxy.newProxyInstance(
                 beanClass.java.classLoader,
                 beanClass.java.interfaces,
@@ -54,15 +53,15 @@ class InvocationHandlerImpl(
             val userRequest = methodParams.find { it is UserRequest } as UserRequest
             val currentMessage = telegramService.sendMessage(
                 chatId = userRequest.chatId,
-                text = "Your request is very important to us, the best specialist process it"
+                text = REQUEST
             )
-            method.invoke(bean, *methodParams)
+            val result = method.invoke(bean, *methodParams)
 
             telegramService.deleteMessage(
                 userRequest.chatId,
                 currentMessage.messageId
             )
-            return Any()
+            return result
         }
         return method.invoke(bean, *methodParams)
     }
@@ -73,5 +72,9 @@ class InvocationHandlerImpl(
                     beanMethod.javaClass.typeParameters.contentEquals(method.javaClass.typeParameters) &&
                     beanMethod.findAnnotation<VeryPoliteCommandHandler>() != null
         }
+    }
+
+    companion object {
+        const val REQUEST = "Your request is very important to us, the best specialist is processing it"
     }
 }

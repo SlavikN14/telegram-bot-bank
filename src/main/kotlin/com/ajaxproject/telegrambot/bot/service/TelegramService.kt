@@ -21,7 +21,7 @@ class TelegramService(
             msg.replyMarkup(replyKeyboard)
         }.build()
         val responseMessage = execute(sendMessage)
-        return responseMessage!!
+        return responseMessage?: throw MessageIsNullException("Execute message is null")
     }
 
     fun deleteMessage(chatId: Long, messageId: Int) {
@@ -42,3 +42,5 @@ class TelegramService(
         private val log = LoggerFactory.getLogger(TelegramService::class.java)
     }
 }
+
+class MessageIsNullException(message: String) : Exception(message)

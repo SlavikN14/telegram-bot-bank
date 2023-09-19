@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class Dispatcher(
-    private var handlers: List<UserRequestHandler>,
+    private val handlers: List<UserRequestHandler>,
 ) {
 
     @PostConstruct
