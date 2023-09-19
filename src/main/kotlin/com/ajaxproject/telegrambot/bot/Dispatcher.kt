@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component
 class Dispatcher(
     private val handlers: List<UserRequestHandler>,
 ) {
+
     @PostConstruct
-    fun setupHandlers() {
+    fun init() {
         handlers.sortedWith(Comparator.comparing(UserRequestHandler::isGlobal).reversed())
             .toList()
     }

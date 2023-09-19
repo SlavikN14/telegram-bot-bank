@@ -2,6 +2,8 @@ package com.ajaxproject.telegrambot.bot.handlers.impl
 
 import com.ajaxproject.telegrambot.bot.enums.ConversationState
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
+import com.ajaxproject.telegrambot.annotations.VeryPoliteCommand
+import com.ajaxproject.telegrambot.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.model.UserRequest
 import com.ajaxproject.telegrambot.bot.model.UserSession
 import com.ajaxproject.telegrambot.bot.service.TelegramService
@@ -11,6 +13,7 @@ import com.ajaxproject.telegrambot.bot.utils.TextsUtils
 import org.springframework.stereotype.Component
 
 @Component
+@VeryPoliteCommand
 class StartCommandHandler(
     val telegramService: TelegramService,
     val text: TextsUtils,
@@ -20,11 +23,11 @@ class StartCommandHandler(
     override fun isApplicable(request: UserRequest): Boolean {
         return isCommand(request.update, START)
     }
-
+    @VeryPoliteCommandHandler
     override fun handle(dispatchRequest: UserRequest) {
         telegramService.sendMessage(
-            dispatchRequest.chatId,
-            text.getText(Id.WELCOME)
+            chatId = dispatchRequest.chatId,
+            text = text.getText(Id.WELCOME)
         )
         val session: UserSession = dispatchRequest.userSession
         session.state = ConversationState.WAITING_FOR_TEXT
