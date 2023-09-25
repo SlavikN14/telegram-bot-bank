@@ -14,3 +14,7 @@ data class TextProperties @ConstructorBinding constructor(
     val path: String,
     val fileName: String
 )
+@ConfigurationProperties(prefix = "mono")
+data class MonobankProperties @ConstructorBinding constructor(
+    val url : String
+)

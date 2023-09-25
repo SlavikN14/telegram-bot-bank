@@ -1,4 +1,4 @@
-package com.ajaxproject.telegrambot.annotations
+package com.ajaxproject.telegrambot.bot.annotations
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
