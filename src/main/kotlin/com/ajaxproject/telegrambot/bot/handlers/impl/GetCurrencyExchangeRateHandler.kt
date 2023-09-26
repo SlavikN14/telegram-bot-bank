@@ -9,7 +9,6 @@ import com.ajaxproject.telegrambot.bot.models.user.UserSession
 import com.ajaxproject.telegrambot.bot.service.CurrencyExchangeService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
-import com.ajaxproject.telegrambot.bot.service.findNameByCode
 import com.ajaxproject.telegrambot.bot.utils.TextsUtils
 import org.springframework.stereotype.Component
 
@@ -47,10 +46,27 @@ class GetCurrencyExchangeRateHandler(
     }
 
     fun formatCurrencyInfo(mongoCurrency: MongoCurrency, codeA: Int, codeB: Int): String {
-        return "\uD83D\uDCB5 Currency: ${codeA.findNameByCode()} to ${codeB.findNameByCode()}\n\n" +
-                "Buy Rate: \uD83D\uDCB0 ${mongoCurrency.rateBuy} \n\n" +
-                "Sell Rate: \uD83D\uDCB3 ${mongoCurrency.rateSell}\n\n"
+        return """
+            Currency: ${codeA.findNameByCode()} to ${codeB.findNameByCode()}
+            
+            Buy Rate: ${mongoCurrency.rateBuy}
+            
+            Sell Rate: ${mongoCurrency.rateSell}
+            """.trimIndent()
     }
 
     override val isGlobal: Boolean = true
 }
+
+private fun Int.findNameByCode(): String {
+    return when (this) {
+        Currency.UAH.code -> Currency.UAH.name
+        Currency.EUR.code -> Currency.EUR.name
+        Currency.USD.code -> Currency.USD.name
+        else -> {
+            throw NotFindCodeException("Code not found")
+        }
+    }
+}
+
+class NotFindCodeException(message: String) : Exception(message)
