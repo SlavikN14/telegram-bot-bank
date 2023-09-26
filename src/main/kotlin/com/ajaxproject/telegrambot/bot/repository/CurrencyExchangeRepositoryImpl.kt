@@ -14,11 +14,9 @@ class CurrencyExchangeRepositoryImpl(
 ) : CurrencyExchangeRepository {
     override fun findByCode(code: Int): List<MongoCurrency> {
         val query: Query = Query().addCriteria(
-            Criteria.where("currency_code_A").`is`(code)
+            Criteria.where("currencyCodeA").`is`(code)
                 .orOperator(
-                    Criteria.where("currency_code_B").`is`(Currency.UAH.code),
-                    Criteria.where("currency_code_B").`is`(Currency.USD.code),
-                    Criteria.where("currency_code_B").`is`(Currency.EUR.code)
+                    Criteria.where("currencyCodeB").`in`(Currency.entries.map { it.code }),
                 )
         )
         return mongoTemplate.find(query, MongoCurrency::class.java, MongoCurrency.COLLECTION_NAME)
