@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 
 interface CurrencyExchangeRepository {
 
-    fun findByCode(code: Int): List<MongoCurrency?>
+    fun findByCode(code: Int): List<MongoCurrency>
 
     fun findAll(): List<MongoCurrency>
 

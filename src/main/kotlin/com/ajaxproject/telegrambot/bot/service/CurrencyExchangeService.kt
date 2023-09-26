@@ -2,7 +2,6 @@ package com.ajaxproject.telegrambot.bot.service
 
 import com.ajaxproject.telegrambot.bot.dto.MonobankCurrencyExchangeResponse
 import com.ajaxproject.telegrambot.bot.dto.toEntity
-import com.ajaxproject.telegrambot.bot.enums.Currency
 import com.ajaxproject.telegrambot.bot.models.currency.MongoCurrency
 import com.ajaxproject.telegrambot.bot.repository.CurrencyExchangeRepositoryImpl
 import org.springframework.stereotype.Component
@@ -16,19 +15,6 @@ class CurrencyExchangeService(
     }
 
     fun getCurrencyByCode(code: Int): List<MongoCurrency> {
-        return currencyExchangeRepository.findByCode(code).filter { it.currencyCodeA == code }
+        return currencyExchangeRepository.findByCode(code)
     }
 }
-
-fun Int.findNameByCode(): String {
-    return when (this) {
-        Currency.UAH.code -> Currency.UAH.name
-        Currency.EUR.code -> Currency.EUR.name
-        Currency.USD.code -> Currency.USD.name
-        else -> {
-            throw NotFindCodeException("Code not found")
-        }
-    }
-}
-
-class NotFindCodeException(message: String) : Exception(message)
