@@ -1,6 +1,6 @@
 package com.ajaxproject.telegrambot.bot.utils
 
-import com.squareup.okhttp.OkHttpClient
+import okhttp3.OkHttpClient
 
 object HttpUtils {
 

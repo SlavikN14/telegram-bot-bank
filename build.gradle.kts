@@ -27,7 +27,7 @@ dependencies {
     implementation("org.telegram:telegrambots:$telegramBotVersion")
     implementation("org.telegram:telegrambotsextensions:$telegramBotVersion")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegramBotVersion")
-    implementation("com.squareup.okhttp:okhttp:2.7.5")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
