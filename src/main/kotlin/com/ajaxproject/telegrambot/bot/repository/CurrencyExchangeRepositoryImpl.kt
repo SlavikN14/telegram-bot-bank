@@ -16,7 +16,7 @@ class CurrencyExchangeRepositoryImpl(
         val query: Query = Query().addCriteria(
             Criteria.where("currencyCodeA").`is`(code)
                 .orOperator(
-                    Criteria.where("currencyCodeB").`in`(Currency.entries.map { it.code }),
+                    Criteria.where("currencyCodeB").`in`(currencyCodes),
                 )
         )
         return mongoTemplate.find(query, MongoCurrency::class.java, MongoCurrency.COLLECTION_NAME)
@@ -35,5 +35,9 @@ class CurrencyExchangeRepositoryImpl(
             MongoCurrency::class.java,
             MongoCurrency.COLLECTION_NAME
         )
+    }
+
+    companion object {
+        private val currencyCodes: List<Int> = Currency.entries.map { it.code }
     }
 }
