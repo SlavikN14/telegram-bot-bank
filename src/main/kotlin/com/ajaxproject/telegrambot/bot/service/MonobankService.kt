@@ -21,22 +21,25 @@ class MonobankService(
     fun getCurrencyExchangeRates(): Array<MonobankCurrencyExchangeResponse> {
         val response: Response = HttpUtils.HTTP_CLIENT
             .newCall(request).execute()
-        var arrayResponses = emptyArray<MonobankCurrencyExchangeResponse>()
-        if (response.isSuccessful) {
-            arrayResponses = JsonUtils.GSON.fromJson(
-                response.body?.string(), Array<MonobankCurrencyExchangeResponse>::class.java
-            )
-            response.body?.close()
+        return if (response.isSuccessful) {
+            parseBody(response)
         } else {
             log.error("HTTP request failed with code {} and response body: {}", response.code, response.body?.string())
+            emptyArray()
         }
-        return arrayResponses
+    }
+
+    private fun parseBody(response: Response): Array<MonobankCurrencyExchangeResponse> {
+        val body = response.body ?: return emptyArray()
+        return body.use {
+            JsonUtils.GSON.fromJson(it.string(), Array<MonobankCurrencyExchangeResponse>::class.java)
+        }
     }
 
     @Scheduled(fixedRate = 300000)
     fun sendCurrencyExchangeRates() {
         currencyExchangeService.addAllCurrency(getCurrencyExchangeRates())
-        log.info("Update data in database")
+        log.info("Updated data in database")
     }
 
     companion object {
