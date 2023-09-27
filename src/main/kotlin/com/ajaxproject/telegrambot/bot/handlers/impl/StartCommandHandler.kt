@@ -1,11 +1,11 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
+import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
+import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.enums.ConversationState
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.annotations.VeryPoliteCommand
-import com.ajaxproject.telegrambot.annotations.VeryPoliteCommandHandler
-import com.ajaxproject.telegrambot.bot.model.UserRequest
-import com.ajaxproject.telegrambot.bot.model.UserSession
+import com.ajaxproject.telegrambot.bot.models.user.UserRequest
+import com.ajaxproject.telegrambot.bot.models.user.UserSession
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.utils.Id
@@ -23,6 +23,7 @@ class StartCommandHandler(
     override fun isApplicable(request: UserRequest): Boolean {
         return isCommand(request.update, START)
     }
+
     @VeryPoliteCommandHandler
     override fun handle(dispatchRequest: UserRequest) {
         telegramService.sendMessage(

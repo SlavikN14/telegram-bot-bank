@@ -1,9 +1,9 @@
 package com.ajaxproject.telegrambot.bot.service
 
-import com.ajaxproject.telegrambot.bot.model.UserSession
-import org.springframework.stereotype.Component
+import com.ajaxproject.telegrambot.bot.models.user.UserSession
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class UserSessionService {
 
     val userSessionMap: MutableMap<Long, UserSession> = mutableMapOf()

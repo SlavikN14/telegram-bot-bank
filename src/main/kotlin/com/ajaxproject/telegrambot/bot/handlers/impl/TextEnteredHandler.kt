@@ -1,11 +1,12 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
-import com.ajaxproject.telegrambot.annotations.VeryPoliteCommand
-import com.ajaxproject.telegrambot.annotations.VeryPoliteCommandHandler
+import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
+import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.enums.ConversationState
+import com.ajaxproject.telegrambot.bot.enums.Currency
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.model.UserRequest
-import com.ajaxproject.telegrambot.bot.model.UserSession
+import com.ajaxproject.telegrambot.bot.models.user.UserRequest
+import com.ajaxproject.telegrambot.bot.models.user.UserSession
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.utils.Id
@@ -26,6 +27,7 @@ class TextEnteredHandler(
         return ConversationState.WAITING_FOR_TEXT == request.userSession.state &&
                 request.update.isTextMessage()
     }
+
     @VeryPoliteCommandHandler
     override fun handle(dispatchRequest: UserRequest) {
         val textFromUser = dispatchRequest.update.message.text
@@ -34,7 +36,10 @@ class TextEnteredHandler(
             text = textFromUser + text.getText(Id.FUNCTIONS),
             replyKeyboard = KeyboardUtils.inlineKeyboard(
                 KeyboardUtils.inlineRowKeyboard(
-                    listOf(KeyboardUtils.inlineButton("Get Currency", CURRENCY))
+                    listOf(
+                        KeyboardUtils.inlineButton("USD", Currency.USD.code.toString()),
+                        KeyboardUtils.inlineButton("EUR", Currency.EUR.code.toString())
+                    )
                 )
             )
         )
@@ -46,8 +51,4 @@ class TextEnteredHandler(
     }
 
     override val isGlobal: Boolean = false
-
-    companion object {
-        const val CURRENCY = "/currency"
-    }
 }

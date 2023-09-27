@@ -1,8 +1,8 @@
-package com.ajaxproject.telegrambot.beanpostprocessor
+package com.ajaxproject.telegrambot.bot.beanpostprocessor
 
-import com.ajaxproject.telegrambot.annotations.VeryPoliteCommand
-import com.ajaxproject.telegrambot.annotations.VeryPoliteCommandHandler
-import com.ajaxproject.telegrambot.bot.model.UserRequest
+import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
+import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
+import com.ajaxproject.telegrambot.bot.models.user.UserRequest
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.BeanPostProcessor
@@ -53,7 +53,7 @@ class InvocationHandlerImpl(
             val userRequest = methodParams.find { it is UserRequest } as UserRequest
             val currentMessage = telegramService.sendMessage(
                 chatId = userRequest.chatId,
-                text = REQUEST
+                text = REQUEST_HANDLING_MESSAGE
             )
             val result = method.invoke(bean, *methodParams)
 
@@ -75,6 +75,6 @@ class InvocationHandlerImpl(
     }
 
     companion object {
-        const val REQUEST = "Your request is very important to us, the best specialist is processing it"
+        const val REQUEST_HANDLING_MESSAGE = "Your request is very important to us, the best specialist is processing it"
     }
 }

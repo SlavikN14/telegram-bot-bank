@@ -1,4 +1,4 @@
-package com.ajaxproject.telegrambot.bot.model
+package com.ajaxproject.telegrambot.bot.models.user
 
 import org.telegram.telegrambots.meta.api.objects.Update
 

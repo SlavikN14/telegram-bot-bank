@@ -1,6 +1,6 @@
 package com.ajaxproject.telegrambot.bot
 
-import com.ajaxproject.telegrambot.bot.model.UserRequest
+import com.ajaxproject.telegrambot.bot.models.user.UserRequest
 import com.ajaxproject.telegrambot.bot.properties.BotProperties
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import org.slf4j.LoggerFactory
@@ -12,11 +12,12 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class BankInfoBot(
     val dispatcher: Dispatcher,
     val userSessionService: UserSessionService,
-    val properties: BotProperties,
+    val botProperties: BotProperties,
 ) : TelegramLongPollingBot() {
-    override fun getBotToken(): String = properties.token
 
-    override fun getBotUsername(): String = properties.username
+    override fun getBotToken(): String = botProperties.token
+
+    override fun getBotUsername(): String = botProperties.username
 
     override fun onUpdateReceived(update: Update) {
         if ((!update.hasMessage() || !update.message.hasText()) && !update.hasCallbackQuery()) {

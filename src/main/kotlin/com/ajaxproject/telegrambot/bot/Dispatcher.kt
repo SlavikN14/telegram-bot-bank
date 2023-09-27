@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.bot
 
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.model.UserRequest
+import com.ajaxproject.telegrambot.bot.models.user.UserRequest
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
 

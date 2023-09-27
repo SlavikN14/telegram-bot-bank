@@ -2,14 +2,14 @@ package com.ajaxproject.telegrambot.bot.service
 
 import com.ajaxproject.telegrambot.bot.sender.BankInfoBotSender
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 
-@Component
+@Service
 class TelegramService(
     val botSender: BankInfoBotSender,
 ) {
