@@ -47,7 +47,7 @@ class InvocationHandlerImpl(
     private val originalBean: KClass<*>,
 ) : InvocationHandler {
 
-    override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any {
+    override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
         val methodParams = args ?: emptyArray()
         if (hasVeryPoliteCommandHandlerAnnotation(originalBean, method)) {
             val userRequest = methodParams.find { it is UserRequest } as UserRequest
@@ -75,6 +75,7 @@ class InvocationHandlerImpl(
     }
 
     companion object {
-        const val REQUEST_HANDLING_MESSAGE = "Your request is very important to us, the best specialist is processing it"
+        const val REQUEST_HANDLING_MESSAGE =
+            "Your request is very important to us, the best specialist is processing it"
     }
 }
