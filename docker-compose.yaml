@@ -1,6 +1,7 @@
 version: '3.5'
 
 services:
+
   telegram-bot:
     build:
       dockerfile: Dockerfile
@@ -9,8 +10,13 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+
   mongo:
     image: mongo
     container_name: "mongodb"
     ports:
-      - "27070:27017"
+      - "27017:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      timeout: 5s
+      retries: 10
