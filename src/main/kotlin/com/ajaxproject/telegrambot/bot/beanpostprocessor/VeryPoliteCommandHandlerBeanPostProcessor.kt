@@ -69,8 +69,8 @@ class InvocationHandlerImpl(
     private fun hasVeryPoliteCommandHandlerAnnotation(originalBean: KClass<*>, method: Method): Boolean {
         return originalBean.memberFunctions.any { beanMethod ->
             beanMethod.name == method.name &&
-                    beanMethod.javaClass.typeParameters.contentEquals(method.javaClass.typeParameters) &&
-                    beanMethod.findAnnotation<VeryPoliteCommandHandler>() != null
+                beanMethod.javaClass.typeParameters.contentEquals(method.javaClass.typeParameters) &&
+                beanMethod.findAnnotation<VeryPoliteCommandHandler>() != null
         }
     }
 
