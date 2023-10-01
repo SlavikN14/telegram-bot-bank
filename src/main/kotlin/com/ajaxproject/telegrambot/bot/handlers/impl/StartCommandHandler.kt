@@ -3,21 +3,21 @@ package com.ajaxproject.telegrambot.bot.handlers.impl
 import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
 import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.enums.ConversationState
+import com.ajaxproject.telegrambot.bot.enums.PropertyName
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.models.user.UserRequest
 import com.ajaxproject.telegrambot.bot.models.user.UserSession
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
-import com.ajaxproject.telegrambot.bot.utils.Id
-import com.ajaxproject.telegrambot.bot.utils.TextsUtils
+import com.ajaxproject.telegrambot.bot.utils.TextService
 import org.springframework.stereotype.Component
 
 @Component
 @VeryPoliteCommand
 class StartCommandHandler(
-    val telegramService: TelegramService,
-    val text: TextsUtils,
-    val userSessionService: UserSessionService,
+    private val telegramService: TelegramService,
+    private val userSessionService: UserSessionService,
+    private val textService: TextService,
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UserRequest): Boolean {
@@ -28,7 +28,7 @@ class StartCommandHandler(
     override fun handle(dispatchRequest: UserRequest) {
         telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = text.getText(Id.WELCOME)
+            text = textService.readText(PropertyName.WELCOME.name)
         )
         val session: UserSession = dispatchRequest.userSession
         session.state = ConversationState.WAITING_FOR_TEXT

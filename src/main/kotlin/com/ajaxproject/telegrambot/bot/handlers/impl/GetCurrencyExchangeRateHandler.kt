@@ -9,21 +9,19 @@ import com.ajaxproject.telegrambot.bot.models.user.UserSession
 import com.ajaxproject.telegrambot.bot.service.CurrencyExchangeService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
-import com.ajaxproject.telegrambot.bot.utils.TextsUtils
 import org.springframework.stereotype.Component
-
 
 @Component
 class GetCurrencyExchangeRateHandler(
-    val telegramService: TelegramService,
-    val text: TextsUtils,
-    val userSessionService: UserSessionService,
-    val currencyExchangeService: CurrencyExchangeService,
+    private val telegramService: TelegramService,
+    private val userSessionService: UserSessionService,
+    private val currencyExchangeService: CurrencyExchangeService,
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UserRequest): Boolean {
         return isCommand(
-            request.update, command = arrayOf(
+            request.update,
+            command = arrayOf(
                 Currency.USD.code.toString(),
                 Currency.EUR.code.toString()
             )
@@ -52,7 +50,7 @@ class GetCurrencyExchangeRateHandler(
             Buy Rate: ${mongoCurrency.rateBuy}
             
             Sell Rate: ${mongoCurrency.rateSell}
-            """.trimIndent()
+        """.trimIndent()
     }
 
     override val isGlobal: Boolean = true

@@ -3,7 +3,7 @@ spring:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   data:
     mongodb:
-      uri: mongodb://localhost:27017/telegram_bot_db
+      uri: mongodb://mongo:27017/telegram_bot_db
 
 bot:
   token: #secret
