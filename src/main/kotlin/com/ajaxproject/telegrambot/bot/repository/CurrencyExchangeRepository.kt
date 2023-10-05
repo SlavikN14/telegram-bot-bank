@@ -1,6 +1,6 @@
 package com.ajaxproject.telegrambot.bot.repository
 
-import com.ajaxproject.telegrambot.bot.models.currency.MongoCurrency
+import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import org.bson.types.ObjectId
 
 interface CurrencyExchangeRepository {

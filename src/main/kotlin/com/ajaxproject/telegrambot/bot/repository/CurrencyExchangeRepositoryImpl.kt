@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.bot.repository
 
 import com.ajaxproject.telegrambot.bot.enums.Currency
-import com.ajaxproject.telegrambot.bot.models.currency.MongoCurrency
+import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria

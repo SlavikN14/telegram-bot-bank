@@ -2,14 +2,15 @@ package com.ajaxproject.telegrambot.bot.handlers.impl
 
 import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
 import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
-import com.ajaxproject.telegrambot.bot.enums.ConversationState
-import com.ajaxproject.telegrambot.bot.enums.PropertyName
+import com.ajaxproject.telegrambot.bot.enums.Commands.START
+import com.ajaxproject.telegrambot.bot.enums.ConversationState.WAITING_FOR_NUMBER
+import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.WELCOME_TEXT
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.models.user.UserRequest
-import com.ajaxproject.telegrambot.bot.models.user.UserSession
 import com.ajaxproject.telegrambot.bot.service.TelegramService
+import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
-import com.ajaxproject.telegrambot.bot.utils.TextService
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import org.springframework.stereotype.Component
 
 @Component
@@ -20,24 +21,21 @@ class StartCommandHandler(
     private val textService: TextService,
 ) : UserRequestHandler {
 
-    override fun isApplicable(request: UserRequest): Boolean {
-        return isCommand(request.update, START)
+    override fun isApplicable(request: UpdateRequest): Boolean {
+        return isCommand(request.update, START.command)
     }
 
     @VeryPoliteCommandHandler
-    override fun handle(dispatchRequest: UserRequest) {
+    override fun handle(dispatchRequest: UpdateRequest) {
         telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = textService.readText(PropertyName.WELCOME.name)
+            text = textService.readText(WELCOME_TEXT.name)
         )
-        val session: UserSession = dispatchRequest.userSession
-        session.state = ConversationState.WAITING_FOR_TEXT
+        val session: UpdateSession = dispatchRequest.updateSession.apply {
+            state = WAITING_FOR_NUMBER
+        }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
 
     override val isGlobal: Boolean = true
-
-    companion object {
-        const val START = "/start"
-    }
 }

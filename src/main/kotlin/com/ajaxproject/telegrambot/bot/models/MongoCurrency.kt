@@ -1,6 +1,6 @@
-package com.ajaxproject.telegrambot.bot.models.currency
+package com.ajaxproject.telegrambot.bot.models
 
-import com.ajaxproject.telegrambot.bot.models.currency.MongoCurrency.Companion.COLLECTION_NAME
+import com.ajaxproject.telegrambot.bot.models.MongoCurrency.Companion.COLLECTION_NAME
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.mongodb.core.mapping.Document

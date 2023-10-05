@@ -2,8 +2,8 @@ package com.ajaxproject.telegrambot.bot.beanpostprocessor
 
 import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
 import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
-import com.ajaxproject.telegrambot.bot.models.user.UserRequest
 import com.ajaxproject.telegrambot.bot.service.TelegramService
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.cglib.proxy.InvocationHandler
@@ -50,15 +50,15 @@ class InvocationHandlerImpl(
     override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
         val methodParams = args ?: emptyArray()
         if (hasVeryPoliteCommandHandlerAnnotation(originalBean, method)) {
-            val userRequest = methodParams.find { it is UserRequest } as UserRequest
+            val updateRequest = methodParams.find { it is UpdateRequest } as UpdateRequest
             val currentMessage = telegramService.sendMessage(
-                chatId = userRequest.chatId,
+                chatId = updateRequest.chatId,
                 text = REQUEST_HANDLING_MESSAGE
             )
             val result = method.invoke(bean, *methodParams)
 
             telegramService.deleteMessage(
-                userRequest.chatId,
+                updateRequest.chatId,
                 currentMessage.messageId
             )
             return result

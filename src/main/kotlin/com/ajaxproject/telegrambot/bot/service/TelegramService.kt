@@ -1,8 +1,11 @@
 package com.ajaxproject.telegrambot.bot.service
 
-import com.ajaxproject.telegrambot.bot.sender.BankInfoBotSender
+import com.ajaxproject.telegrambot.bot.properties.BotProperties
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
+import org.telegram.telegrambots.bots.DefaultAbsSender
+import org.telegram.telegrambots.bots.DefaultBotOptions
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
@@ -11,7 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 
 @Service
 class TelegramService(
-    val botSender: BankInfoBotSender,
+    private val botSender: BankInfoBotSender,
 ) {
 
     fun sendMessage(chatId: Long, text: String, replyKeyboard: ReplyKeyboard? = null): Message {
@@ -20,8 +23,7 @@ class TelegramService(
             msg.chatId(chatId)
             msg.replyMarkup(replyKeyboard)
         }.build()
-        val responseMessage = execute(sendMessage)
-        return responseMessage?: throw MessageIsNullException("Execute message is null")
+        return execute(sendMessage) ?: throw MessageIsNullException("Execute message is null")
     }
 
     fun deleteMessage(chatId: Long, messageId: Int) {
@@ -44,3 +46,6 @@ class TelegramService(
 }
 
 class MessageIsNullException(message: String) : Exception(message)
+
+@Component
+class BankInfoBotSender(properties: BotProperties) : DefaultAbsSender(DefaultBotOptions(), properties.token)

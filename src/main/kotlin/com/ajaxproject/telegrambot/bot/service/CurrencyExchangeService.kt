@@ -2,7 +2,7 @@ package com.ajaxproject.telegrambot.bot.service
 
 import com.ajaxproject.telegrambot.bot.dto.MonobankCurrencyExchangeResponse
 import com.ajaxproject.telegrambot.bot.dto.toEntity
-import com.ajaxproject.telegrambot.bot.models.currency.MongoCurrency
+import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import com.ajaxproject.telegrambot.bot.repository.CurrencyExchangeRepositoryImpl
 import org.springframework.stereotype.Component
 

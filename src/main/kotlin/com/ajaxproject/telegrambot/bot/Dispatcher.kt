@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.bot
 
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.models.user.UserRequest
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
 
@@ -16,9 +16,9 @@ class Dispatcher(
             .toList()
     }
 
-    fun dispatch(userRequest: UserRequest): Boolean {
-        return handlers.firstOrNull { it.isApplicable(userRequest) }?.run {
-            handle(userRequest)
+    fun dispatch(updateRequest: UpdateRequest): Boolean {
+        return handlers.firstOrNull { it.isApplicable(updateRequest) }?.run {
+            handle(updateRequest)
             true
         } ?: false
     }
