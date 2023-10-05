@@ -1,8 +1,8 @@
 package com.ajaxproject.telegrambot.bot
 
-import com.ajaxproject.telegrambot.bot.models.user.UserRequest
 import com.ajaxproject.telegrambot.bot.properties.BotProperties
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
@@ -13,9 +13,7 @@ class BankInfoBot(
     val dispatcher: Dispatcher,
     val userSessionService: UserSessionService,
     val botProperties: BotProperties,
-) : TelegramLongPollingBot() {
-
-    override fun getBotToken(): String = botProperties.token
+) : TelegramLongPollingBot(botProperties.token) {
 
     override fun getBotUsername(): String = botProperties.username
 
@@ -31,13 +29,13 @@ class BankInfoBot(
             else -> return
         }
 
-        val userRequest = UserRequest(
+        val updateRequest = UpdateRequest(
             update = update,
-            userSession = userSessionService.getSession(chatId),
+            updateSession = userSessionService.getSession(chatId),
             chatId = chatId
         )
 
-        val isDispatched = dispatcher.dispatch(userRequest)
+        val isDispatched = dispatcher.dispatch(updateRequest)
 
         if (!isDispatched) {
             log.warn(
