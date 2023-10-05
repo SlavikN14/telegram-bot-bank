@@ -1,4 +1,4 @@
-package com.ajaxproject.telegrambot.bot.utils
+package com.ajaxproject.telegrambot.bot.service
 
 import com.ajaxproject.telegrambot.bot.properties.TextProperties
 import org.springframework.core.io.ClassPathResource
@@ -12,15 +12,11 @@ class TextService(
 ) {
 
     fun readText(property: String): String {
-        val properties = Properties()
-        val resource = ClassPathResource(textProperties.path)
-        val inputStream = resource.inputStream
-
-        inputStream.use {
-            properties.load(inputStream)
-        }
-
-        return properties.getProperty(property)
+        return ClassPathResource(textProperties.path).inputStream
+            .use { inputStream ->
+                Properties().apply { load(inputStream) }
+            }
+            .getProperty(property)
             ?: throw FileNameNotFoundException("File ${textProperties.path} not found")
     }
 }
