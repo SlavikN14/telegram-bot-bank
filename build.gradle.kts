@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val telegramBotVersion = "6.3.0"
+val telegramBotVersion = "6.8.0"
 
 plugins {
     id("org.springframework.boot") version "3.1.3"
