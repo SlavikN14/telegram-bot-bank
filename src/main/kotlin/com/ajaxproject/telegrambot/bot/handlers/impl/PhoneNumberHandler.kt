@@ -53,8 +53,6 @@ class PhoneNumberHandler(
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
 
-    override val isGlobal: Boolean = false
-
     companion object {
         val REGEX_PHONE_NUMBER =
             "^\\+\\d{12}\$".toRegex()

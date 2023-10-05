@@ -1,7 +1,6 @@
 package com.ajaxproject.telegrambot.bot.repository
 
 import com.ajaxproject.telegrambot.bot.models.MongoUser
-import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query

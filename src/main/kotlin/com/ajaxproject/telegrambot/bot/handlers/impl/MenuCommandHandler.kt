@@ -50,8 +50,6 @@ class MenuCommandHandler(
             }
         )
     }
-
-    override val isGlobal: Boolean = true
 }
 
 @Component
@@ -78,8 +76,6 @@ class CurrencyButtonsHandler(
             }
         )
     }
-
-    override val isGlobal: Boolean = true
 }
 
 @Component
@@ -106,8 +102,6 @@ class IncomesButtonsHandler(
             }
         )
     }
-
-    override val isGlobal: Boolean = true
 }
 
 @Component
@@ -134,8 +128,6 @@ class ExpensesButtonsHandler(
             }
         )
     }
-
-    override val isGlobal: Boolean = true
 }
 
 @Component
@@ -170,6 +162,4 @@ class CurrentBalanceHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = true
 }

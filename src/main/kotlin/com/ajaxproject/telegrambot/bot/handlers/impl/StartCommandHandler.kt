@@ -36,6 +36,4 @@ class StartCommandHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = true
 }

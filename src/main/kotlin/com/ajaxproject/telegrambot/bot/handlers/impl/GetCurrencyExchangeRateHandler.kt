@@ -67,8 +67,6 @@ class GetCurrencyExchangeRateHandler(
             Sell Rate: ${mongoCurrency.rateSell}
         """.trimIndent()
     }
-
-    override val isGlobal: Boolean = true
 }
 
 private fun Int.findNameByCode(): String {

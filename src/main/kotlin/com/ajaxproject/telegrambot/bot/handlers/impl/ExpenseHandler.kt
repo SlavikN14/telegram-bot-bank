@@ -45,8 +45,6 @@ class AddExpensesButtonHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = false
 }
 
 @Component
@@ -98,8 +96,6 @@ class AddExpensesHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = true
 }
 
 @Component
@@ -138,6 +134,4 @@ class GetExpensesHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = true
 }

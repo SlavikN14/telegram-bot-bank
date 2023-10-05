@@ -9,8 +9,6 @@ interface UserRequestHandler {
 
     fun handle(dispatchRequest: UpdateRequest)
 
-    val isGlobal: Boolean
-
     fun isCommand(update: Update, vararg command: String): Boolean {
         return update.hasMessage() && update.message.isCommand() && command.contains(update.message.text) ||
             update.hasCallbackQuery() && command.contains(update.callbackQuery.data)

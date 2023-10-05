@@ -44,8 +44,6 @@ class AddIncomesButtonHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = false
 }
 
 @Component
@@ -96,8 +94,6 @@ class AddIncomesHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = true
 }
 
 @Component
@@ -136,6 +132,4 @@ class GetIncomesHandler(
         }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
-
-    override val isGlobal: Boolean = true
 }
