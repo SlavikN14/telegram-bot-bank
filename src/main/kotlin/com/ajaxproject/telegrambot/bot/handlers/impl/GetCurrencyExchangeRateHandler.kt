@@ -1,34 +1,38 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
-import com.ajaxproject.telegrambot.bot.enums.ConversationState
-import com.ajaxproject.telegrambot.bot.enums.Currency
+import com.ajaxproject.telegrambot.bot.enums.Commands
+import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
+import com.ajaxproject.telegrambot.bot.enums.Currency.EUR
+import com.ajaxproject.telegrambot.bot.enums.Currency.UAH
+import com.ajaxproject.telegrambot.bot.enums.Currency.USD
+import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.models.currency.MongoCurrency
-import com.ajaxproject.telegrambot.bot.models.user.UserRequest
-import com.ajaxproject.telegrambot.bot.models.user.UserSession
+import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import com.ajaxproject.telegrambot.bot.service.CurrencyExchangeService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
+import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
+import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
 
 @Component
 class GetCurrencyExchangeRateHandler(
     private val telegramService: TelegramService,
-    private val userSessionService: UserSessionService,
     private val currencyExchangeService: CurrencyExchangeService,
+    private val textService: TextService,
+    private val userSessionService: UserSessionService
 ) : UserRequestHandler {
 
-    override fun isApplicable(request: UserRequest): Boolean {
+    override fun isApplicable(request: UpdateRequest): Boolean {
         return isCommand(
-            request.update,
-            command = arrayOf(
-                Currency.USD.code.toString(),
-                Currency.EUR.code.toString()
-            )
+            update = request.update,
+            command = arrayOf(USD.code.toString(), EUR.code.toString())
         )
     }
 
-    override fun handle(dispatchRequest: UserRequest) {
+    override fun handle(dispatchRequest: UpdateRequest) {
         val callbackQueryCode = dispatchRequest.update.callbackQuery.data.toInt()
         val arrayCurrency = currencyExchangeService.getCurrencyByCode(callbackQueryCode)
         arrayCurrency.forEach {
@@ -37,13 +41,24 @@ class GetCurrencyExchangeRateHandler(
                 text = formatCurrencyInfo(it, it.currencyCodeA, it.currencyCodeB)
             )
         }
-
-        val session: UserSession = dispatchRequest.userSession
-        session.state = ConversationState.CONVERSATION_STARTED
+        telegramService.sendMessage(
+            chatId = dispatchRequest.chatId,
+            text = textService.readText(BACK_TO_MENU.name),
+            replyKeyboard = KeyboardUtils.run {
+                inlineKeyboard(
+                    inlineRowKeyboard(
+                        inlineButton("Return to menu", Commands.MENU.command)
+                    )
+                )
+            }
+        )
+        val session: UpdateSession = dispatchRequest.updateSession.apply {
+            state = CONVERSATION_STARTED
+        }
         userSessionService.saveSession(dispatchRequest.chatId, session)
     }
 
-    fun formatCurrencyInfo(mongoCurrency: MongoCurrency, codeA: Int, codeB: Int): String {
+    private fun formatCurrencyInfo(mongoCurrency: MongoCurrency, codeA: Int, codeB: Int): String {
         return """
             Currency: ${codeA.findNameByCode()} to ${codeB.findNameByCode()}
             
@@ -58,9 +73,9 @@ class GetCurrencyExchangeRateHandler(
 
 private fun Int.findNameByCode(): String {
     return when (this) {
-        Currency.UAH.code -> Currency.UAH.name
-        Currency.EUR.code -> Currency.EUR.name
-        Currency.USD.code -> Currency.USD.name
+        UAH.code -> UAH.name
+        EUR.code -> EUR.name
+        USD.code -> USD.name
         else -> {
             throw NotFindCodeException("Code not found")
         }
