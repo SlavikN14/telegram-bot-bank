@@ -1,6 +1,5 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
-import com.ajaxproject.telegrambot.bot.dto.toResponse
 import com.ajaxproject.telegrambot.bot.enums.Commands.ADD_EXPENSE
 import com.ajaxproject.telegrambot.bot.enums.Commands.ADD_INCOME
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_EXPENSE
@@ -12,7 +11,7 @@ import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.FAILED_ADD_FINANCE
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.SUCCESSFUL_ADD_FINANCE
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.models.MongoExpense
+import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import com.ajaxproject.telegrambot.bot.service.FinanceService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
@@ -70,9 +69,10 @@ class AddExpensesHandler(
         }
 
         financeService.addExpense(
-            MongoExpense(
+            MongoFinance(
                 id = ObjectId(),
                 userId = dispatchRequest.chatId,
+                financeType = FinanceService.EXPENSE,
                 amount = income.split(":")[0].toDouble(),
                 description = income.split(":")[1]
             )
@@ -112,10 +112,10 @@ class GetExpensesHandler(
 
     override fun handle(dispatchRequest: UpdateRequest) {
         financeService.getExpenseByUserId(dispatchRequest.chatId)
-            .forEach {
+            ?.forEach {
                 telegramService.sendMessage(
                     chatId = dispatchRequest.chatId,
-                    text = it.toResponse().toString()
+                    text = it.toString()
                 )
             }
         telegramService.sendMessage(

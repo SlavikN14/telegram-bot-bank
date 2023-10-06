@@ -1,6 +1,5 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
-import com.ajaxproject.telegrambot.bot.dto.toResponse
 import com.ajaxproject.telegrambot.bot.enums.Commands.ADD_INCOME
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_INCOMES
 import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
@@ -11,7 +10,7 @@ import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.FAILED_ADD_FINANCE
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.SUCCESSFUL_ADD_FINANCE
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.models.MongoIncome
+import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import com.ajaxproject.telegrambot.bot.service.FinanceService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
@@ -56,7 +55,7 @@ class AddIncomesHandler(
 
     override fun isApplicable(request: UpdateRequest): Boolean {
         return WAITING_FOR_ADD_INCOME == request.updateSession.state &&
-            request.update.isTextMessage()
+                request.update.isTextMessage()
     }
 
     override fun handle(dispatchRequest: UpdateRequest) {
@@ -69,9 +68,10 @@ class AddIncomesHandler(
         }
 
         financeService.addIncome(
-            MongoIncome(
+            MongoFinance(
                 id = ObjectId(),
                 userId = dispatchRequest.chatId,
+                financeType = FinanceService.INCOME,
                 amount = income.split(":")[0].toDouble(),
                 description = income.split(":")[1]
             )
@@ -101,7 +101,7 @@ class GetIncomesHandler(
     private val telegramService: TelegramService,
     private val financeService: FinanceService,
     private val textService: TextService,
-    private val userSessionService: UserSessionService
+    private val userSessionService: UserSessionService,
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
@@ -110,10 +110,10 @@ class GetIncomesHandler(
 
     override fun handle(dispatchRequest: UpdateRequest) {
         financeService.getIncomeByUserId(dispatchRequest.chatId)
-            .forEach {
+            ?.forEach {
                 telegramService.sendMessage(
                     chatId = dispatchRequest.chatId,
-                    text = it.toResponse().toString()
+                    text = it.toString()
                 )
             }
         telegramService.sendMessage(

@@ -1,6 +1,6 @@
 package com.ajaxproject.telegrambot.bot.dto
 
-import com.ajaxproject.telegrambot.bot.models.MongoExpense
+import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import java.util.*
 
 data class ExpenseResponse(
@@ -19,7 +19,7 @@ data class ExpenseResponse(
     }
 }
 
-fun MongoExpense.toResponse() = ExpenseResponse(
+fun MongoFinance.toExpenseResponse() = ExpenseResponse(
     amount = amount,
     description = description,
     date = date

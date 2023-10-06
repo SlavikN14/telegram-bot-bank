@@ -144,7 +144,7 @@ class CurrentBalanceHandler(
     override fun handle(dispatchRequest: UpdateRequest) {
         telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = financeService.getCurrencyBalance(dispatchRequest.chatId)
+            text = "Your current balance is ${financeService.getCurrencyBalance(dispatchRequest.chatId)}"
         )
         telegramService.sendMessage(
             chatId = dispatchRequest.chatId,

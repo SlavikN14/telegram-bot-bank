@@ -1,12 +1,13 @@
 package com.ajaxproject.telegrambot.bot.repository
 
+import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import org.bson.types.ObjectId
 
-interface FinanceRepository<T> {
+interface FinanceRepository {
 
-    fun findByUserId(userId: Long, entityType: Class<T>, collectionName: String): List<T>
+    fun findByUserId(userId: Long, financeType: String): List<MongoFinance>?
 
-    fun save(finance: T, collectionName: String): T
+    fun save(finance: MongoFinance, financeType: String): MongoFinance
 
-    fun deleteById(id: ObjectId, entityType: Class<T>, collectionName: String)
+    fun deleteById(id: ObjectId, financeType: String)
 }
