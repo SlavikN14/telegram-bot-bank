@@ -7,7 +7,7 @@ interface FinanceRepository {
 
     fun findByUserId(userId: Long, financeType: String): List<MongoFinance>?
 
-    fun save(finance: MongoFinance, financeType: String): MongoFinance
+    fun save(finance: MongoFinance): MongoFinance
 
     fun deleteById(id: ObjectId, financeType: String)
 }

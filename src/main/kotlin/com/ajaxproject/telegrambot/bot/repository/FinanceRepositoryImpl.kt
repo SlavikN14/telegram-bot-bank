@@ -35,7 +35,7 @@ class FinanceRepositoryImpl(
         mongoTemplate.findAndRemove(query, MongoFinance::class.java, MongoFinance.COLLECTION_NAME)
     }
 
-    override fun save(finance: MongoFinance, financeType: String): MongoFinance {
+    override fun save(finance: MongoFinance): MongoFinance {
         return mongoTemplate.save(finance, MongoFinance.COLLECTION_NAME)
     }
 }

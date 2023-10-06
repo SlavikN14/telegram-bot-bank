@@ -34,11 +34,11 @@ class FinanceService(
     }
 
     fun addIncome(income: MongoFinance): MongoFinance {
-        return financeRepositoryImpl.save(income, INCOME)
+        return financeRepositoryImpl.save(income)
     }
 
     fun addExpense(expense: MongoFinance): MongoFinance {
-        return financeRepositoryImpl.save(expense, EXPENSE)
+        return financeRepositoryImpl.save(expense)
     }
 
     fun deleteFinanceById(id: ObjectId, financeType: String) {
