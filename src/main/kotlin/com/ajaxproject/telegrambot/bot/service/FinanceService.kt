@@ -6,7 +6,6 @@ import com.ajaxproject.telegrambot.bot.dto.toExpenseResponse
 import com.ajaxproject.telegrambot.bot.dto.toIncomeResponse
 import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import com.ajaxproject.telegrambot.bot.repository.FinanceRepositoryImpl
-import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -17,8 +16,8 @@ class FinanceService(
 
     fun getIncomeByUserId(userId: Long): List<IncomeResponse>? {
         return financeRepositoryImpl.findByUserId(userId, INCOME)
-            .map { it.toIncomeResponse() }
-            .let {
+            ?.map { it.toIncomeResponse() }
+            ?: let {
                 log.warn("Income with userId {} not found", userId)
                 emptyList()
             }
@@ -26,23 +25,15 @@ class FinanceService(
 
     fun getExpenseByUserId(userId: Long): List<ExpenseResponse>? {
         return financeRepositoryImpl.findByUserId(userId, EXPENSE)
-            .map { it.toExpenseResponse() }
-            .let {
+            ?.map { it.toExpenseResponse() }
+            ?: let {
                 log.warn("Expense with userId {} not found", userId)
                 emptyList()
             }
     }
 
-    fun addIncome(income: MongoFinance): MongoFinance {
-        return financeRepositoryImpl.save(income, INCOME)
-    }
-
-    fun addExpense(expense: MongoFinance): MongoFinance {
-        return financeRepositoryImpl.save(expense, EXPENSE)
-    }
-
-    fun deleteFinanceById(id: ObjectId, financeType: String) {
-        financeRepositoryImpl.deleteById(id, financeType)
+    fun addFinance(finance: MongoFinance): MongoFinance {
+        return financeRepositoryImpl.save(finance)
     }
 
     fun getCurrencyBalance(userId: Long): Double {

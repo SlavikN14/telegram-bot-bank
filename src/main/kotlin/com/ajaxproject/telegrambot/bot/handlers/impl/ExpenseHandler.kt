@@ -68,7 +68,7 @@ class AddExpensesHandler(
             return
         }
 
-        financeService.addExpense(
+        financeService.addFinance(
             MongoFinance(
                 id = ObjectId(),
                 userId = dispatchRequest.chatId,

@@ -55,7 +55,7 @@ class AddIncomesHandler(
 
     override fun isApplicable(request: UpdateRequest): Boolean {
         return WAITING_FOR_ADD_INCOME == request.updateSession.state &&
-                request.update.isTextMessage()
+            request.update.isTextMessage()
     }
 
     override fun handle(dispatchRequest: UpdateRequest) {
@@ -67,7 +67,7 @@ class AddIncomesHandler(
             return
         }
 
-        financeService.addIncome(
+        financeService.addFinance(
             MongoFinance(
                 id = ObjectId(),
                 userId = dispatchRequest.chatId,

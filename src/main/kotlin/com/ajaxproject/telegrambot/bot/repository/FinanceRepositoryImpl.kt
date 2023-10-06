@@ -15,7 +15,7 @@ class FinanceRepositoryImpl(
     override fun findByUserId(
         userId: Long,
         financeType: String,
-    ): List<MongoFinance> {
+    ): List<MongoFinance>? {
         val query: Query = Query().addCriteria(
             Criteria.where("userId").`is`(userId)
                 .andOperator(
@@ -35,7 +35,7 @@ class FinanceRepositoryImpl(
         mongoTemplate.findAndRemove(query, MongoFinance::class.java, MongoFinance.COLLECTION_NAME)
     }
 
-    override fun save(finance: MongoFinance, financeType: String): MongoFinance {
+    override fun save(finance: MongoFinance): MongoFinance {
         return mongoTemplate.save(finance, MongoFinance.COLLECTION_NAME)
     }
 }
