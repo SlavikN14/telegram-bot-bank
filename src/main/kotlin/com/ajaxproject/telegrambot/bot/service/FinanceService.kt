@@ -4,6 +4,8 @@ import com.ajaxproject.telegrambot.bot.dto.ExpenseResponse
 import com.ajaxproject.telegrambot.bot.dto.IncomeResponse
 import com.ajaxproject.telegrambot.bot.dto.toExpenseResponse
 import com.ajaxproject.telegrambot.bot.dto.toIncomeResponse
+import com.ajaxproject.telegrambot.bot.enums.Finance.EXPENSE
+import com.ajaxproject.telegrambot.bot.enums.Finance.INCOME
 import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import com.ajaxproject.telegrambot.bot.repository.FinanceRepositoryImpl
 import org.slf4j.LoggerFactory
@@ -14,7 +16,7 @@ class FinanceService(
     private val financeRepositoryImpl: FinanceRepositoryImpl,
 ) {
 
-    fun getIncomeByUserId(userId: Long): List<IncomeResponse>? {
+    fun getAllIncomesByUserId(userId: Long): List<IncomeResponse> {
         return financeRepositoryImpl.findByUserId(userId, INCOME)
             ?.map { it.toIncomeResponse() }
             ?: let {
@@ -23,7 +25,7 @@ class FinanceService(
             }
     }
 
-    fun getExpenseByUserId(userId: Long): List<ExpenseResponse>? {
+    fun getAllExpensesByUserId(userId: Long): List<ExpenseResponse> {
         return financeRepositoryImpl.findByUserId(userId, EXPENSE)
             ?.map { it.toExpenseResponse() }
             ?: let {
@@ -37,14 +39,12 @@ class FinanceService(
     }
 
     fun getCurrencyBalance(userId: Long): Double {
-        return getExpenseByUserId(userId)?.sumOf { it.amount }
-            ?.let { getIncomeByUserId(userId)?.sumOf { it.amount }?.minus(it) }
+        return getAllExpensesByUserId(userId)?.sumOf { it.amount }
+            ?.let { getAllIncomesByUserId(userId)?.sumOf { it.amount }?.minus(it) }
             ?: 0.0
     }
 
     companion object {
-        const val INCOME = "income"
-        const val EXPENSE = "expense"
         private val log = LoggerFactory.getLogger(FinanceService::class.java)
     }
 }

@@ -1,5 +1,6 @@
 package com.ajaxproject.telegrambot.bot.repository
 
+import com.ajaxproject.telegrambot.bot.enums.Finance
 import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -14,22 +15,22 @@ class FinanceRepositoryImpl(
 
     override fun findByUserId(
         userId: Long,
-        financeType: String,
+        financeType: Finance,
     ): List<MongoFinance>? {
         val query: Query = Query().addCriteria(
             Criteria.where("userId").`is`(userId)
                 .andOperator(
-                    Criteria.where("financeType").`is`(financeType),
+                    Criteria.where("financeType").`is`(financeType.name),
                 )
         )
         return mongoTemplate.find(query, MongoFinance::class.java, MongoFinance.COLLECTION_NAME)
     }
 
-    override fun deleteById(id: ObjectId, financeType: String) {
+    override fun deleteById(id: ObjectId, financeType: Finance) {
         val query: Query = Query().addCriteria(
             Criteria.where("id").`is`(id)
                 .andOperator(
-                    Criteria.where("finance").`is`(financeType),
+                    Criteria.where("finance").`is`(financeType.name),
                 )
         )
         mongoTemplate.findAndRemove(query, MongoFinance::class.java, MongoFinance.COLLECTION_NAME)

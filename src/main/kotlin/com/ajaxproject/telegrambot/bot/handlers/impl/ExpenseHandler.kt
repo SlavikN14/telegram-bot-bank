@@ -6,6 +6,7 @@ import com.ajaxproject.telegrambot.bot.enums.Commands.GET_EXPENSE
 import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.WAITING_FOR_ADD_EXPENSE
+import com.ajaxproject.telegrambot.bot.enums.Finance.EXPENSE
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.ADD_FINANCE
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.FAILED_ADD_FINANCE
@@ -72,7 +73,7 @@ class AddExpensesHandler(
             MongoFinance(
                 id = ObjectId(),
                 userId = dispatchRequest.chatId,
-                financeType = FinanceService.EXPENSE,
+                financeType = EXPENSE,
                 amount = income.split(":")[0].toDouble(),
                 description = income.split(":")[1]
             )
@@ -111,7 +112,7 @@ class GetExpensesHandler(
     }
 
     override fun handle(dispatchRequest: UpdateRequest) {
-        financeService.getExpenseByUserId(dispatchRequest.chatId)
+        financeService.getAllExpensesByUserId(dispatchRequest.chatId)
             ?.forEach {
                 telegramService.sendMessage(
                     chatId = dispatchRequest.chatId,
