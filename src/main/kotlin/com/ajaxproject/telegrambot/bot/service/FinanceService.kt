@@ -8,7 +8,6 @@ import com.ajaxproject.telegrambot.bot.enums.Finance.EXPENSE
 import com.ajaxproject.telegrambot.bot.enums.Finance.INCOME
 import com.ajaxproject.telegrambot.bot.models.MongoFinance
 import com.ajaxproject.telegrambot.bot.repository.FinanceRepositoryImpl
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,20 +17,12 @@ class FinanceService(
 
     fun getAllIncomesByUserId(userId: Long): List<IncomeResponse> {
         return financeRepositoryImpl.findByUserId(userId, INCOME)
-            ?.map { it.toIncomeResponse() }
-            ?: let {
-                log.warn("Income with userId {} not found", userId)
-                emptyList()
-            }
+            .map { it.toIncomeResponse() }
     }
 
     fun getAllExpensesByUserId(userId: Long): List<ExpenseResponse> {
         return financeRepositoryImpl.findByUserId(userId, EXPENSE)
-            ?.map { it.toExpenseResponse() }
-            ?: let {
-                log.warn("Expense with userId {} not found", userId)
-                emptyList()
-            }
+            .map { it.toExpenseResponse() }
     }
 
     fun addFinance(finance: MongoFinance): MongoFinance {
@@ -39,12 +30,7 @@ class FinanceService(
     }
 
     fun getCurrencyBalance(userId: Long): Double {
-        return getAllExpensesByUserId(userId)?.sumOf { it.amount }
-            ?.let { getAllIncomesByUserId(userId)?.sumOf { it.amount }?.minus(it) }
-            ?: 0.0
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(FinanceService::class.java)
+        return getAllExpensesByUserId(userId).sumOf { it.amount }
+            .let { getAllIncomesByUserId(userId).sumOf { it.amount }.minus(it) }
     }
 }

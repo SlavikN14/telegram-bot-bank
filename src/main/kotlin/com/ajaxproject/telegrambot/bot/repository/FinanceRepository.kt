@@ -6,7 +6,7 @@ import org.bson.types.ObjectId
 
 interface FinanceRepository {
 
-    fun findByUserId(userId: Long, financeType: Finance): List<MongoFinance>?
+    fun findByUserId(userId: Long, financeType: Finance): List<MongoFinance>
 
     fun save(finance: MongoFinance): MongoFinance
 

@@ -16,14 +16,14 @@ class FinanceRepositoryImpl(
     override fun findByUserId(
         userId: Long,
         financeType: Finance,
-    ): List<MongoFinance>? {
+    ): List<MongoFinance> {
         val query: Query = Query().addCriteria(
             Criteria.where("userId").`is`(userId)
                 .andOperator(
                     Criteria.where("financeType").`is`(financeType.name),
                 )
         )
-        return mongoTemplate.find(query, MongoFinance::class.java, MongoFinance.COLLECTION_NAME)
+        return mongoTemplate.find(query, MongoFinance::class.java)
     }
 
     override fun deleteById(id: ObjectId, financeType: Finance) {
@@ -33,10 +33,10 @@ class FinanceRepositoryImpl(
                     Criteria.where("finance").`is`(financeType.name),
                 )
         )
-        mongoTemplate.findAndRemove(query, MongoFinance::class.java, MongoFinance.COLLECTION_NAME)
+        mongoTemplate.findAndRemove(query, MongoFinance::class.java)
     }
 
     override fun save(finance: MongoFinance): MongoFinance {
-        return mongoTemplate.save(finance, MongoFinance.COLLECTION_NAME)
+        return mongoTemplate.save(finance)
     }
 }
