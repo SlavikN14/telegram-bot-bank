@@ -16,5 +16,5 @@ data class TextProperties @ConstructorBinding constructor(
 
 @ConfigurationProperties(prefix = "mono")
 data class MonobankProperties @ConstructorBinding constructor(
-    val url : String
+    val url: String
 )
