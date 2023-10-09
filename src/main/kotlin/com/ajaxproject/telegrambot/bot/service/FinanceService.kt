@@ -16,12 +16,12 @@ class FinanceService(
 ) {
 
     fun getAllIncomesByUserId(userId: Long): List<IncomeResponse> {
-        return financeRepositoryImpl.findByUserId(userId, INCOME)
+        return financeRepositoryImpl.findByUserIdAndFinance(userId, INCOME)
             .map { it.toIncomeResponse() }
     }
 
     fun getAllExpensesByUserId(userId: Long): List<ExpenseResponse> {
-        return financeRepositoryImpl.findByUserId(userId, EXPENSE)
+        return financeRepositoryImpl.findByUserIdAndFinance(userId, EXPENSE)
             .map { it.toExpenseResponse() }
     }
 

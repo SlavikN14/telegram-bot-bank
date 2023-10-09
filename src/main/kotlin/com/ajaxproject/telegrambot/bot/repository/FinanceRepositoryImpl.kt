@@ -13,7 +13,7 @@ class FinanceRepositoryImpl(
     private val mongoTemplate: MongoTemplate,
 ) : FinanceRepository {
 
-    override fun findByUserId(
+    override fun findByUserIdAndFinance(
         userId: Long,
         financeType: Finance,
     ): List<MongoFinance> {

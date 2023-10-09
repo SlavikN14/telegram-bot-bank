@@ -47,6 +47,7 @@ class InvocationHandlerImpl(
     private val originalBean: KClass<*>,
 ) : InvocationHandler {
 
+    @Suppress("SpreadOperator")
     override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
         val methodParams = args ?: emptyArray()
         if (hasVeryPoliteCommandHandlerAnnotation(originalBean, method)) {

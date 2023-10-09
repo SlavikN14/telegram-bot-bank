@@ -111,7 +111,7 @@ class GetIncomesHandler(
 
     override fun handle(dispatchRequest: UpdateRequest) {
         financeService.getAllIncomesByUserId(dispatchRequest.chatId)
-            ?.forEach {
+            .forEach {
                 telegramService.sendMessage(
                     chatId = dispatchRequest.chatId,
                     text = it.toString()
