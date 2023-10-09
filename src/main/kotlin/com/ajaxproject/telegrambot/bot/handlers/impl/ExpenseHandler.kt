@@ -113,7 +113,7 @@ class GetExpensesHandler(
 
     override fun handle(dispatchRequest: UpdateRequest) {
         financeService.getAllExpensesByUserId(dispatchRequest.chatId)
-            ?.forEach {
+            .forEach {
                 telegramService.sendMessage(
                     chatId = dispatchRequest.chatId,
                     text = it.toString()
