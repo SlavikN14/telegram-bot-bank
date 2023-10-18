@@ -1,7 +1,6 @@
 val telegramBotVersion = "6.8.0"
 
 plugins {
-    id("com.google.protobuf") version "0.9.4"
     id("org.springframework.boot") version "3.1.3"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("plugin.spring") version "1.9.0"
@@ -19,7 +18,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("io.nats:jnats:2.16.14")
-    implementation("com.google.protobuf:protobuf-java:3.24.3")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
