@@ -6,14 +6,12 @@ import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdResponse
 import com.google.protobuf.Parser
-import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 
 @Component
 class DeleteFinanceByIdNatsController(
     private val financeService: FinanceService,
-    override val connection: Connection,
 ) : NatsController<DeleteFinanceByIdRequest, DeleteFinanceByIdResponse> {
 
     override val subject: String = NatsSubject.FinanceRequest.DELETE_FINANCE

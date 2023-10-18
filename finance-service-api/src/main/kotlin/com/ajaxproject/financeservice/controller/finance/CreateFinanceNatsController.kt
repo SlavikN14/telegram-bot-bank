@@ -9,13 +9,11 @@ import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceResponse
 import com.ajaxproject.financeservice.dto.toProtoFinance
 import com.google.protobuf.Parser
-import io.nats.client.Connection
 import org.springframework.stereotype.Component
 
 @Component
 class CreateFinanceNatsController(
     private val financeService: FinanceService,
-    override val connection: Connection,
 ) : NatsController<CreateFinanceRequest, CreateFinanceResponse> {
 
     override val subject: String = NatsSubject.FinanceRequest.CREATE_FINANCE

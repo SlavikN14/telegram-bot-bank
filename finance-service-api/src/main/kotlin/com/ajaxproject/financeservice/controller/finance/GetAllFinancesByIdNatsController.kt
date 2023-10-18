@@ -9,13 +9,11 @@ import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdRequ
 import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdResponse
 import com.ajaxproject.financeservice.dto.toProtoFinance
 import com.google.protobuf.Parser
-import io.nats.client.Connection
 import org.springframework.stereotype.Component
 
 @Component
 class GetAllFinancesByIdNatsController(
     private val financeService: FinanceService,
-    override val connection: Connection,
 ) : NatsController<GetAllFinancesByIdRequest, GetAllFinancesByIdResponse> {
 
     override val subject: String = NatsSubject.FinanceRequest.GET_ALL_FINANCES_BY_ID
