@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.bot.beanpostprocessor
 
-import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
-import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
+import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.VeryPoliteCommand
+import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.beans.factory.annotation.Autowired

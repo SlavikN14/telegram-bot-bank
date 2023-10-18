@@ -1,4 +1,4 @@
-package com.ajaxproject.telegrambot
+package com.ajaxproject.telegrambot.bot
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

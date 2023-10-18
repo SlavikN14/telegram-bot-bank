@@ -1,4 +1,4 @@
-package com.ajaxproject.telegrambot.bot.annotations
+package com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)

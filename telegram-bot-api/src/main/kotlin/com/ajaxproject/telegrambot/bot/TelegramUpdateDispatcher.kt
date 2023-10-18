@@ -5,7 +5,7 @@ import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
 
 @Component
-class Dispatcher(
+class TelegramUpdateDispatcher(
     private val handlers: List<UserRequestHandler>,
 ) {
 

@@ -9,8 +9,8 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Component
-class BankInfoBot(
-    val dispatcher: Dispatcher,
+class FinanceBot(
+    val telegramUpdateDispatcher: TelegramUpdateDispatcher,
     val userSessionService: UserSessionService,
     val botProperties: BotProperties,
 ) : TelegramLongPollingBot(botProperties.token) {
@@ -35,7 +35,7 @@ class BankInfoBot(
             chatId = chatId
         )
 
-        val isDispatched = dispatcher.dispatch(updateRequest)
+        val isDispatched = telegramUpdateDispatcher.dispatch(updateRequest)
 
         if (!isDispatched) {
             log.warn(
@@ -47,6 +47,6 @@ class BankInfoBot(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(BankInfoBot::class.java)
+        private val log = LoggerFactory.getLogger(FinanceBot::class.java)
     }
 }

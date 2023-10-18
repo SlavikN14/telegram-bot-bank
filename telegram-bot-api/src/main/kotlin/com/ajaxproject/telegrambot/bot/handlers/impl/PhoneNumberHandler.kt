@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
-import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommand
-import com.ajaxproject.telegrambot.bot.annotations.VeryPoliteCommandHandler
+import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.VeryPoliteCommand
+import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.WAITING_FOR_NUMBER
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.WRONG_NUMBER_TEXT
