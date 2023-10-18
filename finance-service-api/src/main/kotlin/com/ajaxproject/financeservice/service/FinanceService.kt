@@ -1,6 +1,6 @@
 package com.ajaxproject.financeservice.service
 
-import com.ajaxproject.financeservice.repository.FinanceRepositoryImpl
+import com.ajaxproject.financeservice.repository.FinanceRepository
 import com.ajaxproject.financeservice.enums.Finance
 import com.ajaxproject.financeservice.enums.Finance.EXPENSE
 import com.ajaxproject.financeservice.enums.Finance.INCOME
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class FinanceService(
-    private val financeRepositoryImpl: FinanceRepositoryImpl,
+    private val financeRepositoryImpl: FinanceRepository,
 ) {
 
     fun getAllFinancesByUserId(userId: Long, financeType: Finance): List<MongoFinance> {
