@@ -1,4 +1,4 @@
-package com.ajaxproject.telegrambot.bot.enums
+package com.ajaxproject.financeservice.enums
 
 enum class Finance {
     INCOME,
