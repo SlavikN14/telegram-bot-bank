@@ -77,14 +77,14 @@ class NatsControllerTest {
         }.build()
 
         //WHEN
-        val currentsResponse = doRequest(
+        val actualResponse = doRequest(
             NatsSubject.FinanceRequest.GET_ALL_FINANCES_BY_ID,
             request,
             GetAllFinancesByIdResponse.parser()
         )
 
         //THEN
-        assertThat(currentsResponse).isEqualTo(expectedResponse)
+        assertThat(actualResponse).isEqualTo(expectedResponse)
     }
 
     @Test
@@ -102,14 +102,14 @@ class NatsControllerTest {
         }.build()
 
         //WHEN
-        val currentResponse = doRequest(
+        val actualResponse = doRequest(
             NatsSubject.FinanceRequest.DELETE_FINANCE,
             request,
             DeleteFinanceByIdResponse.parser()
         )
 
         //THEN
-        assertThat(currentResponse).isEqualTo(expectedResponse)
+        assertThat(actualResponse).isEqualTo(expectedResponse)
     }
 
     @Test
@@ -126,14 +126,14 @@ class NatsControllerTest {
         }.build()
 
         //WHEN
-        val currentResponse = doRequest(
+        val actualResponse = doRequest(
             NatsSubject.FinanceRequest.CREATE_FINANCE,
             request,
             CreateFinanceResponse.parser()
         )
 
         //THEN
-        assertThat(currentResponse).isEqualTo(expectedResponse)
+        assertThat(actualResponse).isEqualTo(expectedResponse)
     }
 
     @Test
@@ -162,14 +162,14 @@ class NatsControllerTest {
         }.build()
 
         //WHEN
-        val currentResponse = doRequest(
+        val actualResponse = doRequest(
             NatsSubject.FinanceRequest.GET_CURRENT_BALANCE,
             request,
             GetCurrentBalanceResponse.parser()
         )
 
         //THEN
-        assertThat(currentResponse).isEqualTo(expectedResponse)
+        assertThat(actualResponse).isEqualTo(expectedResponse)
 
     }
 
