@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package com.ajaxproject.internalapi.finance.input.reqreply;
+
+option java_multiple_files = true;
+
+message DeleteFinanceByIdRequest {
+  string id = 1;
+}
+
+message DeleteFinanceByIdResponse {
+  oneof response {
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    string message = 100;
+  }
+
+  message Failure {
+    string message = 100;
+  }
+}
