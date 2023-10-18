@@ -1,7 +1,7 @@
-package com.ajaxproject.telegrambot.bot.models
+package com.ajaxproject.financeservice.models
 
-import com.ajaxproject.telegrambot.bot.enums.Finance
-import com.ajaxproject.telegrambot.bot.models.MongoFinance.Companion.COLLECTION_NAME
+import com.ajaxproject.financeservice.enums.Finance
+import com.ajaxproject.financeservice.models.MongoFinance.Companion.COLLECTION_NAME
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
@@ -13,12 +13,12 @@ import java.util.*
 data class MongoFinance(
 
     @Id
-    val id: ObjectId,
+    val id: ObjectId = ObjectId(),
     val userId: Long,
     val financeType: Finance,
     val amount: Double,
     val description: String,
-    val date: Date = Date(),
+    val date: Date,
 ) {
 
     companion object {
