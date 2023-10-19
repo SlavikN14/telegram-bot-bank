@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
 
-  nats-telegram-bot:
+  nats:
     image: nats
     container_name: "nats"
     ports:
@@ -22,7 +22,7 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
-      nats-telegram-bot:
+      nats:
         condition: service_started
 
   telegram-bot:
@@ -34,7 +34,7 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
-      nats-telegram-bot:
+      nats:
         condition: service_started
 
   mongo:
