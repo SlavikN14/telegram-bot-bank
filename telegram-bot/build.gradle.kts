@@ -9,7 +9,7 @@ plugins {
 
 dependencies {
     implementation(project(":internal-api"))
-    implementation(project(":finance-models-api"))
+    implementation(project(":finance-models"))
 
     implementation("org.telegram:telegrambots:$telegramBotVersion")
     implementation("org.telegram:telegrambotsextensions:$telegramBotVersion")

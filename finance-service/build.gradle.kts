@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     implementation(project(":internal-api"))
-    implementation(project(":finance-models-api"))
+    implementation(project(":finance-models"))
 
     implementation("io.nats:jnats:2.16.14")
 
