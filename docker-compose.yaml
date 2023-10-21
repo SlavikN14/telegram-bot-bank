@@ -15,7 +15,7 @@ services:
 
   finance-service:
     build:
-      context: finance-service-api
+      context: finance-service
     container_name: "finance-service"
     ports:
       - "8081:8081"
@@ -27,7 +27,7 @@ services:
 
   telegram-bot:
     build:
-      context: telegram-bot-api
+      context: telegram-bot
     container_name: "telegram-service"
     ports:
       - "8080:8080"
