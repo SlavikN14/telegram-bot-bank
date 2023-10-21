@@ -3,4 +3,4 @@ spring:
     mongodb:
       uri: mongodb://mongo:27017/telegram_bot_db
 nats:
-  url: "nats://nats-telegram-bot:4222"
+  url: nats://nats:4222
