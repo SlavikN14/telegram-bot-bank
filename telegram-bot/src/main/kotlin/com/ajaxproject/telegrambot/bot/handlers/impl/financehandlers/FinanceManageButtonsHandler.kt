@@ -28,9 +28,15 @@ class FinanceManageButtonsHandler(
             text = textService.readText(TextPropertyName.FINANCE_MANAGE_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboard(
-                    inlineRowKeyboard(inlineButton(textService.readText(ADD_FINANCE.name), Commands.ADD_FINANCE.command)),
-                    inlineRowKeyboard(inlineButton(textService.readText(GET_ALL_INCOMES.name), Commands.GET_INCOMES.command)),
-                    inlineRowKeyboard(inlineButton(textService.readText(GET_ALL_EXPENSES.name), Commands.GET_EXPENSES.command))
+                    inlineRowKeyboard(
+                        inlineButton(textService.readText(ADD_FINANCE.name), Commands.ADD_FINANCE.command)
+                    ),
+                    inlineRowKeyboard(
+                        inlineButton(textService.readText(GET_ALL_INCOMES.name), Commands.GET_INCOMES.command)
+                    ),
+                    inlineRowKeyboard(
+                        inlineButton(textService.readText(GET_ALL_EXPENSES.name), Commands.GET_EXPENSES.command)
+                    )
                 )
             }
         )

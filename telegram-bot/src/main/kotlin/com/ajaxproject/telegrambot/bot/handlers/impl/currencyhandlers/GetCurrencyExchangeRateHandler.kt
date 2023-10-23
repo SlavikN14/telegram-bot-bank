@@ -2,21 +2,17 @@ package com.ajaxproject.telegrambot.bot.handlers.impl.currencyhandlers
 
 import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.BackToMainMenu
 import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.BackToMainMenuCommand
-import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.Currency.EUR
 import com.ajaxproject.telegrambot.bot.enums.Currency.UAH
 import com.ajaxproject.telegrambot.bot.enums.Currency.USD
-import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import com.ajaxproject.telegrambot.bot.service.CurrencyExchangeService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
-import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
-import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
 
 @BackToMainMenu
@@ -24,7 +20,6 @@ import org.springframework.stereotype.Component
 class GetCurrencyExchangeRateHandler(
     private val telegramService: TelegramService,
     private val currencyExchangeService: CurrencyExchangeService,
-    private val textService: TextService,
     private val userSessionService: UserSessionService,
 ) : UserRequestHandler {
 
