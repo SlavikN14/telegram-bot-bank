@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.ajaxproject.internalapi.finance.commonmodels;
+
+option java_multiple_files = true;
+
+enum FinanceType {
+  INCOME = 0;
+  EXPENSE = 1;
+}
+
+message FinanceMessage {
+  uint64 user_id = 1;
+  FinanceType finance_type = 2;
+  double amount = 3;
+  string description = 4;
+}

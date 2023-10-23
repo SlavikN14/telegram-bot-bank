@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package com.ajaxproject.internalapi.finance.input.reqreply;
+
+option java_multiple_files = true;
+
+message GetCurrentBalanceRequest {
+  uint64 userId = 1;
+}
+
+message GetCurrentBalanceResponse {
+  oneof response {
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    double balance = 1;
+  }
+
+  message Failure {
+    string message = 100;
+  }
+}

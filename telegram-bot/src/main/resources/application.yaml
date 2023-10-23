@@ -1,0 +1,19 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/telegram_bot_db
+
+bot:
+  token: #secret
+  username: FinanceManageBot
+
+text:
+  path: /texts/texts.properties
+
+mono:
+  url: https://api.monobank.ua/bank/currency
+
+nats:
+  url: nats://localhost:4222
