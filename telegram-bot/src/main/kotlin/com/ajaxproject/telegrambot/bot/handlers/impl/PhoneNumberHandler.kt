@@ -1,7 +1,5 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
-import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.VeryPoliteCommand
-import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.VeryPoliteCommandHandler
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.WAITING_FOR_NUMBER
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.WRONG_NUMBER_TEXT
@@ -17,7 +15,6 @@ import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import org.springframework.stereotype.Component
 
 @Component
-@VeryPoliteCommand
 class PhoneNumberHandler(
     private val telegramService: TelegramService,
     private val userSessionService: UserSessionService,
@@ -28,10 +25,9 @@ class PhoneNumberHandler(
 
     override fun isApplicable(request: UpdateRequest): Boolean {
         return WAITING_FOR_NUMBER == request.updateSession.state &&
-            request.update.isTextMessage()
+                request.update.isTextMessage()
     }
 
-    @VeryPoliteCommandHandler
     override fun handle(dispatchRequest: UpdateRequest) {
         val phoneNumber = dispatchRequest.update.message.text
         val chatId = dispatchRequest.chatId
@@ -41,9 +37,7 @@ class PhoneNumberHandler(
             return
         }
 
-        if (userService.getUserByPhoneNumber(phoneNumber) == null) {
-            userService.addUser(MongoUser(chatId, phoneNumber))
-        }
+        userService.addUser(MongoUser(chatId, phoneNumber))
 
         menuCommandHandler.handle(dispatchRequest)
 

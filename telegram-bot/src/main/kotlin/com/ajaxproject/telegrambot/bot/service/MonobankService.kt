@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
 @Service
-class MonobankService(
+class MonobankService( //TODO: change to webflux
     urlProperties: MonobankProperties,
     val currencyExchangeService: CurrencyExchangeService,
 ) {

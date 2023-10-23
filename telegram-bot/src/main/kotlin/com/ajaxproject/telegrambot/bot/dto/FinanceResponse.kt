@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.bot.dto
 
-import com.ajaxproject.financemodelsapi.enums.Finance
-import com.ajaxproject.financemodelsapi.models.MongoFinance
+import com.ajaxproject.financemodels.enums.Finance
+import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import java.util.*

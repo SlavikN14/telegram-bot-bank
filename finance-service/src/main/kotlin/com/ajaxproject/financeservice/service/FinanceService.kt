@@ -1,10 +1,10 @@
 package com.ajaxproject.financeservice.service
 
 import com.ajaxproject.financeservice.repository.FinanceRepository
-import com.ajaxproject.financemodelsapi.enums.Finance
-import com.ajaxproject.financemodelsapi.enums.Finance.EXPENSE
-import com.ajaxproject.financemodelsapi.enums.Finance.INCOME
-import com.ajaxproject.financemodelsapi.models.MongoFinance
+import com.ajaxproject.financemodels.enums.Finance
+import com.ajaxproject.financemodels.enums.Finance.EXPENSE
+import com.ajaxproject.financemodels.enums.Finance.INCOME
+import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import org.bson.types.ObjectId
@@ -30,7 +30,7 @@ class FinanceService(
 
     fun getCurrencyBalance(userId: Long): Double {
         return getAllFinancesByUserId(userId, EXPENSE).sumOf { it.amount }
-            .let { getAllFinancesByUserId(userId, INCOME).sumOf { it.amount } - it }
+            .let { getAllFinancesByUserId(userId, INCOME).sumOf { it.amount } - it } //TODO: rewrite to Reactor
     }
 }
 
@@ -53,14 +53,12 @@ fun FinanceMessage.toMongoFinance(): MongoFinance {
     )
 }
 
-
 fun Finance.toProtoEnumFinance(): FinanceType {
     return when (this) {
         INCOME -> FinanceType.INCOME
         EXPENSE -> FinanceType.EXPENSE
     }
 }
-
 
 fun FinanceType.toFinanceEnum(): Finance {
     return when (this) {
@@ -69,4 +67,3 @@ fun FinanceType.toFinanceEnum(): Finance {
         else -> throw IllegalArgumentException("Unknown finance type")
     }
 }
-

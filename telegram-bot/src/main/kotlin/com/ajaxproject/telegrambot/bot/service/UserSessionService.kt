@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserSessionService {
 
-    val updateSessionMap: MutableMap<Long, UpdateSession> = mutableMapOf()
+    private val updateSessionMap: MutableMap<Long, UpdateSession> = mutableMapOf()
 
     fun getSession(chatId: Long): UpdateSession {
         return updateSessionMap.getOrDefault(chatId, UpdateSession(chatId = chatId))

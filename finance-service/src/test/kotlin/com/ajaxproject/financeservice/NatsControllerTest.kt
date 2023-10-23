@@ -4,9 +4,9 @@ import com.ajaxproject.financeservice.repository.FinanceRepositoryImpl
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.financeservice.service.toProtoEnumFinance
 import com.ajaxproject.financeservice.service.toProtoFinance
-import com.ajaxproject.financemodelsapi.enums.Finance.EXPENSE
-import com.ajaxproject.financemodelsapi.enums.Finance.INCOME
-import com.ajaxproject.financemodelsapi.models.MongoFinance
+import com.ajaxproject.financemodels.enums.Finance.EXPENSE
+import com.ajaxproject.financemodels.enums.Finance.INCOME
+import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceResponse
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdRequest

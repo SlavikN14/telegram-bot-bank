@@ -1,7 +1,7 @@
 package com.ajaxproject.financeservice.repository
 
-import com.ajaxproject.financemodelsapi.enums.Finance
-import com.ajaxproject.financemodelsapi.models.MongoFinance
+import com.ajaxproject.financemodels.enums.Finance
+import com.ajaxproject.financemodels.models.MongoFinance
 import org.bson.types.ObjectId
 
 interface FinanceRepository {

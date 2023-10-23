@@ -11,5 +11,7 @@ enum class Commands(
     ADD_FINANCE("/add_finance"),
     GET_INCOMES("/get_income"),
     GET_EXPENSES("/get_expense"),
-    GET_CURRENT_BALANCE("/get_current_balance")
+    GET_CURRENT_BALANCE("/get_current_balance"),
+    ENG_FILE("/texts/texts-en.properties"),
+    UKR_FILE("/texts/texts-ua.properties")
 }

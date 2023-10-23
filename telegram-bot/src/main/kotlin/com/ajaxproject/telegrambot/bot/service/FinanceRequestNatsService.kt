@@ -6,8 +6,8 @@ import com.ajaxproject.internalapi.finance.input.reqreply.GetCurrentBalanceRespo
 import com.ajaxproject.telegrambot.bot.dto.toMongoFinance
 import com.ajaxproject.telegrambot.bot.dto.toProtoEnumFinance
 import com.ajaxproject.telegrambot.bot.dto.toProtoFinance
-import com.ajaxproject.financemodelsapi.enums.Finance
-import com.ajaxproject.financemodelsapi.models.MongoFinance
+import com.ajaxproject.financemodels.enums.Finance
+import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdRequest

@@ -1,7 +1,7 @@
-package com.ajaxproject.financemodelsapi.models
+package com.ajaxproject.financemodels.models
 
-import com.ajaxproject.financemodelsapi.enums.Finance
-import com.ajaxproject.financemodelsapi.models.MongoFinance.Companion.COLLECTION_NAME
+import com.ajaxproject.financemodels.enums.Finance
+import com.ajaxproject.financemodels.models.MongoFinance.Companion.COLLECTION_NAME
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias

@@ -1,6 +1,8 @@
-package com.ajaxproject.telegrambot.bot.handlers.impl
+package com.ajaxproject.telegrambot.bot.handlers.impl.currencyhandlers
 
-import com.ajaxproject.telegrambot.bot.enums.Commands
+import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.BackToMainMenu
+import com.ajaxproject.telegrambot.bot.beanpostprocessor.annotations.BackToMainMenuCommand
+import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.Currency.EUR
 import com.ajaxproject.telegrambot.bot.enums.Currency.UAH
@@ -17,12 +19,13 @@ import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
 
+@BackToMainMenu
 @Component
 class GetCurrencyExchangeRateHandler(
     private val telegramService: TelegramService,
     private val currencyExchangeService: CurrencyExchangeService,
     private val textService: TextService,
-    private val userSessionService: UserSessionService
+    private val userSessionService: UserSessionService,
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
@@ -32,6 +35,7 @@ class GetCurrencyExchangeRateHandler(
         )
     }
 
+    @BackToMainMenuCommand
     override fun handle(dispatchRequest: UpdateRequest) {
         val callbackQueryCode = dispatchRequest.update.callbackQuery.data.toInt()
         val arrayCurrency = currencyExchangeService.getCurrencyByCode(callbackQueryCode)
@@ -41,17 +45,6 @@ class GetCurrencyExchangeRateHandler(
                 text = formatCurrencyInfo(it, it.currencyCodeA, it.currencyCodeB)
             )
         }
-        telegramService.sendMessage(
-            chatId = dispatchRequest.chatId,
-            text = textService.readText(BACK_TO_MENU.name),
-            replyKeyboard = KeyboardUtils.run {
-                inlineKeyboard(
-                    inlineRowKeyboard(
-                        inlineButton("Return to menu", Commands.MENU.command)
-                    )
-                )
-            }
-        )
         val session: UpdateSession = dispatchRequest.updateSession.apply {
             state = CONVERSATION_STARTED
         }

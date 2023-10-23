@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 class CurrencyExchangeService(
     private val currencyExchangeRepository: CurrencyExchangeRepositoryImpl,
 ) {
+
     fun addAllCurrency(arrayCurrency: Array<MonobankCurrencyExchangeResponse>) {
         arrayCurrency.forEach { currencyExchangeRepository.save(it.toEntity()) }
     }

@@ -7,43 +7,56 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.objects.Update
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
 class FinanceBot(
-    val telegramUpdateDispatcher: TelegramUpdateDispatcher,
-    val userSessionService: UserSessionService,
-    val botProperties: BotProperties,
+    private val telegramUpdateDispatcher: TelegramUpdateDispatcher,
+    private val userSessionService: UserSessionService,
+    private val botProperties: BotProperties,
 ) : TelegramLongPollingBot(botProperties.token) {
 
     override fun getBotUsername(): String = botProperties.username
 
     override fun onUpdateReceived(update: Update) {
-        if ((!update.hasMessage() || !update.message.hasText()) && !update.hasCallbackQuery()) {
-            log.warn("Unexpected update from user")
-            return
-        }
+        Mono.just(update)
+            .filter { update.hasMessage() || update.hasCallbackQuery() }
+            .map { toUpdateRequest(it) }
+            .map { telegramUpdateDispatcher.dispatch(it) }
+            .doOnNext { isDispatched -> logNotDispatched(isDispatched, update) }
+            .subscribeOn(Schedulers.boundedElastic()) //TODO: read about it
+            .subscribe()
+    }
 
-        val chatId = when {
-            update.message != null -> update.message.chatId
-            update.callbackQuery != null -> update.callbackQuery.message.chatId
-            else -> return
-        }
-
-        val updateRequest = UpdateRequest(
-            update = update,
-            updateSession = userSessionService.getSession(chatId),
-            chatId = chatId
-        )
-
-        val isDispatched = telegramUpdateDispatcher.dispatch(updateRequest)
-
-        if (!isDispatched) {
+    private fun logNotDispatched(isDispatched: Boolean, update: Update) {
+        if (isDispatched) {
+            log.info(
+                "Update from user: userId={}, updateDetails={}",
+                update.message.from.id,
+                update.message.text
+            )
+        } else {
             log.warn(
                 "Received unexpected update from user: userId={}, updateDetails={}",
                 update.message.from.id,
                 update.message.text
             )
         }
+    }
+
+    private fun toUpdateRequest(update: Update): UpdateRequest {
+        val chatId = when {
+            update.message != null -> update.message.chatId
+            update.callbackQuery != null -> update.callbackQuery.message.chatId
+            else -> 0
+        } //TODO: rewrite it?
+
+        return UpdateRequest(
+            update = update,
+            updateSession = userSessionService.getSession(chatId),
+            chatId = chatId
+        )
     }
 
     companion object {
