@@ -5,6 +5,7 @@ import com.ajaxproject.telegrambot.bot.dto.toEntity
 import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import com.ajaxproject.telegrambot.bot.repository.CurrencyExchangeRepositoryImpl
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
 class CurrencyExchangeService(
@@ -12,10 +13,14 @@ class CurrencyExchangeService(
 ) {
 
     fun addAllCurrency(arrayCurrency: Array<MonobankCurrencyExchangeResponse>) {
-        arrayCurrency.forEach { currencyExchangeRepository.save(it.toEntity()) }
+        arrayCurrency.forEach {
+            currencyExchangeRepository.save(it.toEntity())
+                .subscribe()
+        }
     }
 
-    fun getCurrencyByCode(code: Int): List<MongoCurrency> {
+    fun getCurrencyByCode(code: Int): Mono<List<MongoCurrency>> {
         return currencyExchangeRepository.findByCode(code)
+            .collectList()
     }
 }

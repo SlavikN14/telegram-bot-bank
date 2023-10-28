@@ -1,15 +1,14 @@
 package com.ajaxproject.telegrambot.bot.repository
 
 import com.ajaxproject.telegrambot.bot.models.MongoCurrency
-import org.bson.types.ObjectId
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 interface CurrencyExchangeRepository {
 
-    fun findByCode(code: Int): List<MongoCurrency>
+    fun findByCode(code: Int): Flux<MongoCurrency>
 
-    fun findAll(): List<MongoCurrency>
+    fun findAll(): Flux<MongoCurrency>
 
-    fun save(currency: MongoCurrency): MongoCurrency
-
-    fun deleteById(userId: ObjectId)
+    fun save(currency: MongoCurrency): Mono<MongoCurrency>
 }
