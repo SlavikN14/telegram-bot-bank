@@ -7,8 +7,9 @@ import com.ajaxproject.financemodels.enums.Finance.INCOME
 import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
-import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import java.util.*
 
 @Service
@@ -16,21 +17,26 @@ class FinanceService(
     private val financeRepositoryImpl: FinanceRepository,
 ) {
 
-    fun getAllFinancesByUserId(userId: Long, financeType: Finance): List<MongoFinance> {
+    fun getAllFinancesByUserId(userId: Long, financeType: Finance): Mono<List<MongoFinance>> {
         return financeRepositoryImpl.findByUserIdAndFinanceType(userId, financeType)
+            .collectList()
     }
 
-    fun addFinance(finance: MongoFinance): MongoFinance {
+    fun addFinance(finance: MongoFinance): Mono<MongoFinance> {
         return financeRepositoryImpl.save(finance)
     }
 
-    fun deleteFinanceByUserId(id: ObjectId) {
-        financeRepositoryImpl.deleteById(id)
+    fun removeAllFinancesByUserId(userId: Long): Mono<Unit> {
+        return Mono.just(financeRepositoryImpl.removeAllById(userId))
     }
 
-    fun getCurrencyBalance(userId: Long): Double {
-        return getAllFinancesByUserId(userId, EXPENSE).sumOf { it.amount }
-            .let { getAllFinancesByUserId(userId, INCOME).sumOf { it.amount } - it } //TODO: rewrite to Reactor
+    fun getCurrencyBalance(userId: Long): Mono<Double> {
+        return Mono.zip(
+            getAllFinancesByUserId(userId, EXPENSE)
+                .map { list -> list.sumOf { it.amount } },
+            getAllFinancesByUserId(userId, INCOME)
+                .map { list -> list.sumOf { it.amount } })
+            .flatMap { finances -> (finances.t2.minus(finances.t1)).toMono() }
     }
 }
 

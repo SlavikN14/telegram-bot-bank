@@ -15,8 +15,9 @@ import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdResp
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
 import io.nats.client.Connection
-import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 
 @Service
@@ -24,7 +25,7 @@ class FinanceRequestNatsService(
     private val connection: Connection,
 ) {
 
-    fun requestToGetAllFinancesByUserId(userId: Long, financeType: Finance): List<MongoFinance> {
+    fun requestToGetAllFinancesByUserId(userId: Long, financeType: Finance): Mono<List<MongoFinance>> {
         val request: GetAllFinancesByIdRequest = GetAllFinancesByIdRequest.newBuilder()
             .setUserId(userId)
             .setFinanceType(financeType.toProtoEnumFinance())
@@ -34,10 +35,10 @@ class FinanceRequestNatsService(
             request,
             GetAllFinancesByIdResponse.parser()
         )
-        return response.success.financeList.map { it.toMongoFinance() }
+        return response.success.financeList.map { it.toMongoFinance() }.toMono()
     }
 
-    fun requestToCreateFinance(finance: MongoFinance): MongoFinance{
+    fun requestToCreateFinance(finance: MongoFinance): Mono<MongoFinance>{
         val request: CreateFinanceRequest = CreateFinanceRequest.newBuilder()
             .setFinance(finance.toProtoFinance())
             .build()
@@ -46,22 +47,22 @@ class FinanceRequestNatsService(
             request,
             CreateFinanceRequest.parser()
         )
-        return response.finance.toMongoFinance()
+        return response.finance.toMongoFinance().toMono()
     }
 
-    fun requestToDeleteFinance(id: ObjectId): String {
+    fun requestToRemoveAllFinances(userId: Long): Mono<String> {
         val request: DeleteFinanceByIdRequest = DeleteFinanceByIdRequest.newBuilder()
-            .setId(id.toHexString())
+            .setUserId(userId)
             .build()
         val response = doRequest(
             NatsSubject.FinanceRequest.DELETE_FINANCE,
             request,
             DeleteFinanceByIdRequest.parser()
         )
-        return response.toString()
+        return response.toString().toMono()
     }
 
-    fun requestToGetCurrentBalance(userId: Long): Double {
+    fun requestToGetCurrentBalance(userId: Long): Mono<Double> {
         val request: GetCurrentBalanceRequest = GetCurrentBalanceRequest.newBuilder()
             .setUserId(userId)
             .build()
@@ -70,7 +71,7 @@ class FinanceRequestNatsService(
             request,
             GetCurrentBalanceResponse.parser()
         )
-        return response.success.balance
+        return response.success.balance.toMono()
     }
 
     private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3> doRequest(

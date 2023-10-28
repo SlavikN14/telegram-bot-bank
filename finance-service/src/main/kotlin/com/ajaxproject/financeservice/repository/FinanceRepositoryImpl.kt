@@ -2,21 +2,22 @@ package com.ajaxproject.financeservice.repository
 
 import com.ajaxproject.financemodels.enums.Finance
 import com.ajaxproject.financemodels.models.MongoFinance
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Repository
 class FinanceRepositoryImpl(
-    private val mongoTemplate: MongoTemplate,
+    private val mongoTemplate: ReactiveMongoTemplate,
 ) : FinanceRepository {
 
     override fun findByUserIdAndFinanceType(
         userId: Long,
         financeType: Finance,
-    ): List<MongoFinance> {
+    ): Flux<MongoFinance> {
         val query: Query = Query().addCriteria(
             Criteria.where("userId").`is`(userId)
                 .andOperator(
@@ -26,14 +27,15 @@ class FinanceRepositoryImpl(
         return mongoTemplate.find(query, MongoFinance::class.java)
     }
 
-    override fun deleteById(id: ObjectId) {
+    override fun removeAllById(userId: Long) {
         val query: Query = Query().addCriteria(
-            Criteria.where("id").`is`(id)
+            Criteria.where("userId").`is`(userId)
         )
-        mongoTemplate.findAndRemove(query, MongoFinance::class.java)
+        mongoTemplate.remove(query, MongoFinance::class.java)
+            .subscribe()
     }
 
-    override fun save(finance: MongoFinance): MongoFinance {
+    override fun save(finance: MongoFinance): Mono<MongoFinance> {
         return mongoTemplate.save(finance)
     }
 }
