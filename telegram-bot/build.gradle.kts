@@ -15,18 +15,17 @@ dependencies {
     implementation("org.telegram:telegrambotsextensions:$telegramBotVersion")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegramBotVersion")
 
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("io.nats:jnats:2.16.14")
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("io.projectreactor:reactor-core:3.5.11")
+    implementation("io.projectreactor:reactor-core")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
+    testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
