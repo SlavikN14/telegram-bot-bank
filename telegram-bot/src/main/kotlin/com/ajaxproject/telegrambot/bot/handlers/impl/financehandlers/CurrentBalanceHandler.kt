@@ -29,14 +29,16 @@ class CurrentBalanceHandler(
 
     @BackToMainMenuCommand
     override fun handle(dispatchRequest: UpdateRequest) {
-        val currentBalanceRequest = financeRequestNatsService.requestToGetCurrentBalance(dispatchRequest.chatId)
-        telegramService.sendMessage(
-            chatId = dispatchRequest.chatId,
-            text = "${textService.readText(CURRENT_BALANCE.name)} $currentBalanceRequest",
-        )
-        val session: UpdateSession = dispatchRequest.updateSession.apply {
-            state = ConversationState.CONVERSATION_STARTED
-        }
-        userSessionService.saveSession(dispatchRequest.chatId, session)
+        financeRequestNatsService.requestToGetCurrentBalance(dispatchRequest.chatId)
+            .subscribe { balance ->
+                telegramService.sendMessage(
+                    chatId = dispatchRequest.chatId,
+                    text = "${textService.readText(CURRENT_BALANCE.name)} $balance",
+                )
+                val session: UpdateSession = dispatchRequest.updateSession.apply {
+                    state = ConversationState.CONVERSATION_STARTED
+                }
+                userSessionService.saveSession(dispatchRequest.chatId, session)
+            }
     }
 }

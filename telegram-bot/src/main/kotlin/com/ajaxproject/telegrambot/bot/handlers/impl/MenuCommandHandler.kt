@@ -1,8 +1,10 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
+import com.ajaxproject.telegrambot.bot.enums.Buttons.DELETE_DATA_BUTTON
 import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_RATE
 import com.ajaxproject.telegrambot.bot.enums.Buttons.MANAGE_FINANCES_MENU
 import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_BALANCE
+import com.ajaxproject.telegrambot.bot.enums.Commands.DELETE_DATA
 import com.ajaxproject.telegrambot.bot.enums.Commands.CURRENCY
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_CURRENT_BALANCE
 import com.ajaxproject.telegrambot.bot.enums.Commands.MANAGE_FINANCES
@@ -40,6 +42,9 @@ class MenuCommandHandler(
                     ),
                     inlineRowKeyboard(
                         inlineButton(textService.readText(GET_CURRENCY_BALANCE.name), GET_CURRENT_BALANCE.command)
+                    ),
+                    inlineRowKeyboard(
+                        inlineButton(textService.readText(DELETE_DATA_BUTTON.name), DELETE_DATA.command)
                     )
                 )
             }

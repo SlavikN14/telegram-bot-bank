@@ -33,17 +33,19 @@ class GetFinancesModelsHandler(
             dispatchRequest.chatId,
             dispatchRequest.update.callbackQuery.data.checkCommandIncomeOrExpense()
         )
-            .map { it.toFinanceResponse() }
-            .forEach {
-                telegramService.sendMessage(
-                    chatId = dispatchRequest.chatId,
-                    text = it.toString()
-                )
-            }
-        val session: UpdateSession = dispatchRequest.updateSession.apply {
-            state = ConversationState.CONVERSATION_STARTED
-        }
-        userSessionService.saveSession(dispatchRequest.chatId, session)
+            .map { list -> list.map { it.toFinanceResponse() } }
+            .doOnNext { financeResponses ->
+                financeResponses.forEach {
+                    telegramService.sendMessage(
+                        chatId = dispatchRequest.chatId,
+                        text = it.toString()
+                    )
+                    val session: UpdateSession = dispatchRequest.updateSession.apply {
+                        state = ConversationState.CONVERSATION_STARTED
+                    }
+                    userSessionService.saveSession(dispatchRequest.chatId, session)
+                }
+            }.subscribe()
     }
 
     private fun String.checkCommandIncomeOrExpense(): Finance {

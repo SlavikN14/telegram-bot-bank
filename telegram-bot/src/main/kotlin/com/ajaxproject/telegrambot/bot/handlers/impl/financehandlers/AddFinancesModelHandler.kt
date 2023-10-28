@@ -11,8 +11,8 @@ import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.financemodels.enums.Finance.INCOME
 import com.ajaxproject.financemodels.enums.Finance.EXPENSE
+import com.ajaxproject.telegrambot.bot.enums.Buttons.BACK_TO_MENU_BUTTON
 import com.ajaxproject.telegrambot.bot.enums.Buttons.ADD_FINANCE_AGAIN
-import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU
 import com.ajaxproject.telegrambot.bot.service.FinanceRequestNatsService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
@@ -40,41 +40,48 @@ class AddFinancesModelHandler(
     override fun handle(dispatchRequest: UpdateRequest) {
         val financeData = dispatchRequest.update.message.text
         val chatId = dispatchRequest.chatId
-        val financeType = checkDataIncomeOrExpense(financeData)
 
-        if (!financeData.matches(Regex("[+-]\\d+\\s+\\w+")) &&
-                !financeData.matches(Regex("[+-]?\\d+\\s+[А-яі]"))
+        if (!financeData.matches(Regex("[+-]\\d+ [^\\n\\r]+\$"))
         ) {
-            telegramService.sendMessage(chatId, textService.readText(FAILED_ADD_FINANCE.name))
+            telegramService.sendMessage(
+                chatId = chatId,
+                text = textService.readText(FAILED_ADD_FINANCE.name),
+                replyKeyboard = KeyboardUtils.run {
+                    inlineKeyboard(
+                        inlineRowKeyboard(
+                            inlineButton(textService.readText(BACK_TO_MENU_BUTTON.name), MENU.command)
+                        )
+                    )
+                })
             return
         }
 
         financeRequestNatsService.requestToCreateFinance(
             MongoFinance(
                 userId = dispatchRequest.chatId,
-                financeType = financeType,
+                financeType = checkDataIncomeOrExpense(financeData),
                 amount = financeData.substring(1).split(" ")[0].toDouble(),
                 description = financeData.split(" ")[1],
                 date = Date()
             )
-        )
-
-        telegramService.sendMessage(
-            chatId = dispatchRequest.chatId,
-            text = textService.readText(SUCCESSFUL_ADD_FINANCE.name),
-            replyKeyboard = KeyboardUtils.run {
-                inlineKeyboard(
-                    inlineRowKeyboard(
-                        inlineButton(textService.readText(ADD_FINANCE_AGAIN.name), ADD_FINANCE.command),
-                        inlineButton(textService.readText(BACK_TO_MENU.name), MENU.command)
+        ).doOnNext {
+            telegramService.sendMessage(
+                chatId = dispatchRequest.chatId,
+                text = textService.readText(SUCCESSFUL_ADD_FINANCE.name),
+                replyKeyboard = KeyboardUtils.run {
+                    inlineKeyboard(
+                        inlineRowKeyboard(
+                            inlineButton(textService.readText(ADD_FINANCE_AGAIN.name), ADD_FINANCE.command),
+                            inlineButton(textService.readText(BACK_TO_MENU_BUTTON.name), MENU.command)
+                        )
                     )
-                )
+                }
+            )
+            val session: UpdateSession = dispatchRequest.updateSession.apply {
+                state = CONVERSATION_STARTED
             }
-        )
-        val session: UpdateSession = dispatchRequest.updateSession.apply {
-            state = CONVERSATION_STARTED
-        }
-        userSessionService.saveSession(dispatchRequest.chatId, session)
+            userSessionService.saveSession(dispatchRequest.chatId, session)
+        }.subscribe()
     }
 
     private fun checkDataIncomeOrExpense(financeData: String): Finance {

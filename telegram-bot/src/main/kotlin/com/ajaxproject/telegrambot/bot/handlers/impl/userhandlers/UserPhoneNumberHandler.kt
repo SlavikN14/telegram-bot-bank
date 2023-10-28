@@ -1,9 +1,10 @@
-package com.ajaxproject.telegrambot.bot.handlers.impl
+package com.ajaxproject.telegrambot.bot.handlers.impl.userhandlers
 
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.WAITING_FOR_NUMBER
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.WRONG_NUMBER_TEXT
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
+import com.ajaxproject.telegrambot.bot.handlers.impl.MenuCommandHandler
 import com.ajaxproject.telegrambot.bot.models.MongoUser
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
@@ -15,7 +16,7 @@ import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import org.springframework.stereotype.Component
 
 @Component
-class PhoneNumberHandler(
+class UserPhoneNumberHandler(
     private val telegramService: TelegramService,
     private val userSessionService: UserSessionService,
     private val textService: TextService,
@@ -38,13 +39,14 @@ class PhoneNumberHandler(
         }
 
         userService.addUser(MongoUser(chatId, phoneNumber))
-
-        menuCommandHandler.handle(dispatchRequest)
-
-        val session: UpdateSession = dispatchRequest.updateSession.apply {
-            state = CONVERSATION_STARTED
-        }
-        userSessionService.saveSession(dispatchRequest.chatId, session)
+            .doOnNext {
+                menuCommandHandler.handle(dispatchRequest)
+                val session: UpdateSession = dispatchRequest.updateSession.apply {
+                    state = CONVERSATION_STARTED
+                }
+                userSessionService.saveSession(dispatchRequest.chatId, session)
+            }
+            .subscribe()
     }
 
     companion object {
