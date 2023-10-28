@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
 object KeyboardUtils {
+
     fun inlineKeyboard(vararg rows: List<InlineKeyboardButton>): InlineKeyboardMarkup {
         return InlineKeyboardMarkup.builder()
             .keyboard(rows.toList())
