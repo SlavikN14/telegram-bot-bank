@@ -1,45 +1,37 @@
 package com.ajaxproject.telegrambot.bot.service
 
 import com.ajaxproject.telegrambot.bot.dto.MonobankCurrencyExchangeResponse
-import com.ajaxproject.telegrambot.bot.properties.MonobankProperties
-import com.ajaxproject.telegrambot.bot.utils.HttpUtils
 import com.ajaxproject.telegrambot.bot.utils.JsonUtils
-import okhttp3.Request
-import okhttp3.Response
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.Disposable
+import reactor.core.publisher.Mono
 
 @Service
-class MonobankService( //TODO: change to webflux
-    urlProperties: MonobankProperties,
-    val currencyExchangeService: CurrencyExchangeService,
+class MonobankService(
+    private val currencyExchangeService: CurrencyExchangeService,
+    private val webClient: WebClient,
 ) {
 
-    private val request: Request = Request.Builder().url(urlProperties.url).get().build()
-
-    fun getCurrencyExchangeRates(): Array<MonobankCurrencyExchangeResponse> {
-        val response: Response = HttpUtils.HTTP_CLIENT
-            .newCall(request).execute()
-        return if (response.isSuccessful) {
-            parseBody(response)
-        } else {
-            log.error("HTTP request failed with code {} and response body: {}", response.code, response.body?.string())
-            emptyArray()
-        }
-    }
-
-    private fun parseBody(response: Response): Array<MonobankCurrencyExchangeResponse> {
-        val body = response.body ?: return emptyArray()
-        return body.use {
-            JsonUtils.GSON.fromJson(it.string(), Array<MonobankCurrencyExchangeResponse>::class.java)
-        }
-    }
-
     @Scheduled(fixedRate = 300000)
-    fun sendCurrencyExchangeRates() {
-        currencyExchangeService.addAllCurrency(getCurrencyExchangeRates())
-        log.info("Updated data in database")
+    fun getCurrencyExchangeRates(): Disposable {
+        return webClient.get()
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .flatMap { response ->
+                parseResponse(response)
+            }
+            .doOnNext { currencyExchangeService.addAllCurrency(it) }
+            .doOnSuccess { log.info("Updated data in the database") }
+            .doOnError { error ->
+                log.error("HTTP request failed with error: ${error.message}")
+            }.subscribe()
+    }
+
+    private fun parseResponse(response: String): Mono<Array<MonobankCurrencyExchangeResponse>> {
+        return Mono.justOrEmpty(JsonUtils.GSON.fromJson(response, Array<MonobankCurrencyExchangeResponse>::class.java))
     }
 
     companion object {
