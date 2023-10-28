@@ -63,7 +63,7 @@ class NatsControllerTest {
     @Test
     fun `should return expected finance when get all finance by request`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance)
+        financeRepository.save(testMongoIncomeFinance).block()
         val userIdSave = testMongoIncomeFinance.userId
         val financeTypeSave = testMongoIncomeFinance.financeType.toProtoEnumFinance()
 
@@ -90,11 +90,11 @@ class NatsControllerTest {
     @Test
     fun `should return expected message when delete finance`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance)
-        val financeId = testMongoIncomeFinance.id.toHexString()
+        financeRepository.save(testMongoIncomeFinance).block()
+        val financeId = testMongoIncomeFinance.userId
 
         val request: DeleteFinanceByIdRequest = DeleteFinanceByIdRequest.newBuilder()
-            .setId(financeId)
+            .setUserId(financeId)
             .build()
 
         val expectedResponse = DeleteFinanceByIdResponse.newBuilder().apply {
@@ -115,7 +115,7 @@ class NatsControllerTest {
     @Test
     fun `should return expected finance when save finance`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance)
+        financeRepository.save(testMongoIncomeFinance).block()
 
         val request: CreateFinanceRequest = CreateFinanceRequest.newBuilder()
             .setFinance(testMongoIncomeFinance.toProtoFinance())
@@ -148,8 +148,8 @@ class NatsControllerTest {
             date = Date()
         )
         financeRepository.run {
-            save(testExpenseFinance)
-            save(testMongoIncomeFinance)
+            save(testExpenseFinance).block()
+            save(testMongoIncomeFinance).block()
         }
         val userIdSave = testMongoIncomeFinance.userId
 
