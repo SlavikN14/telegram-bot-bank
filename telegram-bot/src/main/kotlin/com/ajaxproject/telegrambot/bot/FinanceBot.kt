@@ -25,32 +25,23 @@ class FinanceBot(
             .map { toUpdateRequest(it) }
             .map { telegramUpdateDispatcher.dispatch(it) }
             .doOnNext { isDispatched -> logNotDispatched(isDispatched, update) }
-            .subscribeOn(Schedulers.boundedElastic()) //TODO: read about it
+            .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
     }
 
     private fun logNotDispatched(isDispatched: Boolean, update: Update) {
+        val userId: Long = (update.message?.from?.id ?: update.callbackQuery?.message?.from?.id) as Long
+        val textFromUser: String = (update.message?.text ?: update.callbackQuery?.message?.text).toString()
+
         if (isDispatched) {
-            log.info(
-                "Update from user: userId={}, updateDetails={}",
-                update.message.from.id,
-                update.message.text
-            )
+            log.info("Update from user: userId={}, updateDetails={}", userId, textFromUser)
         } else {
-            log.warn(
-                "Received unexpected update from user: userId={}, updateDetails={}",
-                update.message.from.id,
-                update.message.text
-            )
+            log.warn("Received unexpected update from user: userId={}, updateDetails={}", userId, textFromUser)
         }
     }
 
     private fun toUpdateRequest(update: Update): UpdateRequest {
-        val chatId = when {
-            update.message != null -> update.message.chatId
-            update.callbackQuery != null -> update.callbackQuery.message.chatId
-            else -> 0
-        } //TODO: rewrite it?
+        val chatId: Long = (update.message?.chatId ?: update.callbackQuery?.message?.chatId) as Long
 
         return UpdateRequest(
             update = update,
