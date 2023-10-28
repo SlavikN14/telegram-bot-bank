@@ -39,14 +39,12 @@ fun FinanceMessage.toMongoFinance(): MongoFinance {
     )
 }
 
-
 fun Finance.toProtoEnumFinance(): FinanceType {
     return when (this) {
         Finance.INCOME -> FinanceType.INCOME
         Finance.EXPENSE -> FinanceType.EXPENSE
     }
 }
-
 
 fun FinanceType.toFinanceEnum(): Finance {
     return when (this) {
