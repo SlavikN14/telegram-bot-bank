@@ -7,6 +7,7 @@ import io.nats.client.Dispatcher
 import io.nats.client.Message
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
+import reactor.core.scheduler.Schedulers
 
 @Component
 class NatsControllerBeanPostProcessor(private val connection: Connection) : BeanPostProcessor {
@@ -21,7 +22,7 @@ class NatsControllerBeanPostProcessor(private val connection: Connection) : Bean
 
 private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
         NatsController<RequestT, ResponseT>.initializeNatsController(
-    connection: Connection
+    connection: Connection,
 ) {
     createDispatcher(connection).apply {
         subscribe(subject)
@@ -30,9 +31,13 @@ private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
 
 private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
         NatsController<RequestT, ResponseT>.createDispatcher(
-    connection: Connection
-): Dispatcher = connection.createDispatcher { message: Message ->
-    val parsedData = parser.parseFrom(message.data)
-    val response = handle(parsedData)
-    connection.publish(message.replyTo, response.toByteArray())
+    connection: Connection,
+): Dispatcher {
+    return connection.createDispatcher { message: Message ->
+        val parsedData = parser.parseFrom(message.data)
+        handle(parsedData)
+            .map { it.toByteArray() }
+            .subscribeOn(Schedulers.boundedElastic())
+            .subscribe { connection.publish(message.replyTo, it) }
+    }
 }
