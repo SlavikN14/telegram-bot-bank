@@ -10,7 +10,8 @@ enum class TextPropertyName {
     ADD_FINANCE_TEXT,
     SUCCESSFUL_ADD_FINANCE,
     FAILED_ADD_FINANCE,
-    BACK_TO_MENU
+    BACK_TO_MENU,
+    DATA_IS_DELETED
 }
 
 enum class Buttons {
@@ -25,5 +26,6 @@ enum class Buttons {
     GET_CURRENCY_RATE,
     MANAGE_FINANCES_MENU,
     GET_CURRENCY_BALANCE,
-    BACK_TO_MENU_BUTTON
+    BACK_TO_MENU_BUTTON,
+    DELETE_DATA_BUTTON
 }
