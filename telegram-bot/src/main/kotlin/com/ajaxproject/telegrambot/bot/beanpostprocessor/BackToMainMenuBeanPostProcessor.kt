@@ -60,7 +60,7 @@ class InvocationHandlerMenuImpl(
     override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
         val methodParams = args ?: emptyArray()
         val result = method.invoke(bean, *methodParams)
-        if (hasVeryPoliteCommandHandlerAnnotation(originalBean, method)) {
+        if (hasBackToMainMenuCommandAnnotation(originalBean, method)) {
             val updateRequest = methodParams.find { it is UpdateRequest } as UpdateRequest
             telegramService.sendMessage(
                 chatId = updateRequest.chatId,
@@ -77,7 +77,7 @@ class InvocationHandlerMenuImpl(
         return result
     }
 
-    private fun hasVeryPoliteCommandHandlerAnnotation(originalBean: KClass<*>, method: Method): Boolean {
+    private fun hasBackToMainMenuCommandAnnotation(originalBean: KClass<*>, method: Method): Boolean {
         return originalBean.memberFunctions.any { beanMethod ->
             beanMethod.name == method.name &&
                     beanMethod.javaClass.typeParameters.contentEquals(method.javaClass.typeParameters) &&
