@@ -19,9 +19,11 @@ import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.isTextMessage
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
-import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
+import reactor.kotlin.core.publisher.switchIfEmpty
 import java.util.*
 
 @Component
@@ -41,22 +43,62 @@ class AddFinancesModelHandler(
         val financeData = dispatchRequest.update.message.text
         val chatId = dispatchRequest.chatId
 
-        if (!financeData.matches(Regex("[+-]\\d+ [^\\n\\r]+\$"))
-        ) {
-            telegramService.sendMessage(
-                chatId = chatId,
-                text = textService.readText(FAILED_ADD_FINANCE.name),
-                replyKeyboard = KeyboardUtils.run {
-                    inlineKeyboard(
-                        inlineRowKeyboard(
-                            inlineButton(textService.readText(BACK_TO_MENU_BUTTON.name), MENU.command)
-                        )
-                    )
-                })
-            return
-        }
+        Mono.just(financeData)
+            .filter { it.matches(Regex("[+-]\\d+ [^\\n\\r]+\$")) }
+            .switchIfEmpty {
+                Mono.fromSupplier { sendMessageIfDataIsNotCorrect(chatId) }
+                    .then(Mono.empty())
+            }.subscribeOn(Schedulers.boundedElastic())
+            .flatMap {
+                sendRequestToCreateFinance(dispatchRequest, financeData)
+            }
+            .flatMap {
+                Mono.fromSupplier {
+                    sendMessageIfSuccessfulCreateFinance(chatId)
+                }.subscribeOn(Schedulers.boundedElastic())
+            }
+            .flatMap {
+                Mono.fromSupplier {
+                    dispatchRequest.updateSession.apply { state = CONVERSATION_STARTED }
+                }
+            }
+            .flatMap { session ->
+                userSessionService.saveSession(dispatchRequest.chatId, session)
+                Mono.just(session)
+            }
+            .subscribe()
+    }
 
-        financeRequestNatsService.requestToCreateFinance(
+    private fun sendMessageIfDataIsNotCorrect(chatId: Long) {
+        telegramService.sendMessage(
+            chatId = chatId,
+            text = textService.readText(FAILED_ADD_FINANCE.name),
+            replyKeyboard = KeyboardUtils.run {
+                inlineKeyboard(
+                    inlineRowKeyboard(
+                        inlineButton(textService.readText(BACK_TO_MENU_BUTTON.name), MENU.command)
+                    )
+                )
+            })
+    }
+
+    private fun sendMessageIfSuccessfulCreateFinance(chatId: Long) {
+        telegramService.sendMessage(
+            chatId = chatId,
+            text = textService.readText(SUCCESSFUL_ADD_FINANCE.name),
+            replyKeyboard = KeyboardUtils.run {
+                inlineKeyboard(
+                    inlineRowKeyboard(
+                        inlineButton(textService.readText(ADD_FINANCE_AGAIN.name), ADD_FINANCE.command),
+                        inlineButton(textService.readText(BACK_TO_MENU_BUTTON.name), MENU.command)
+                    )
+                )
+            }
+        )
+    }
+
+    private fun sendRequestToCreateFinance(dispatchRequest: UpdateRequest, financeData: String): Mono<MongoFinance> {
+        return financeRequestNatsService.requestToCreateFinance(
             MongoFinance(
                 userId = dispatchRequest.chatId,
                 financeType = checkDataIncomeOrExpense(financeData),
@@ -64,24 +106,7 @@ class AddFinancesModelHandler(
                 description = financeData.split(" ")[1],
                 date = Date()
             )
-        ).doOnNext {
-            telegramService.sendMessage(
-                chatId = dispatchRequest.chatId,
-                text = textService.readText(SUCCESSFUL_ADD_FINANCE.name),
-                replyKeyboard = KeyboardUtils.run {
-                    inlineKeyboard(
-                        inlineRowKeyboard(
-                            inlineButton(textService.readText(ADD_FINANCE_AGAIN.name), ADD_FINANCE.command),
-                            inlineButton(textService.readText(BACK_TO_MENU_BUTTON.name), MENU.command)
-                        )
-                    )
-                }
-            )
-            val session: UpdateSession = dispatchRequest.updateSession.apply {
-                state = CONVERSATION_STARTED
-            }
-            userSessionService.saveSession(dispatchRequest.chatId, session)
-        }.subscribe()
+        )
     }
 
     private fun checkDataIncomeOrExpense(financeData: String): Finance {

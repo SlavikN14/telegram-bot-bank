@@ -11,8 +11,10 @@ import com.ajaxproject.telegrambot.bot.service.CurrencyExchangeService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
-import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
 class GetCurrencyExchangeRateHandler(
@@ -33,19 +35,32 @@ class GetCurrencyExchangeRateHandler(
         val callbackQueryCode = dispatchRequest.update.callbackQuery.data.toInt()
 
         currencyExchangeService.getCurrencyByCode(callbackQueryCode)
-            .subscribe { arrayCurrency ->
-                arrayCurrency.forEach {
+            .flatMapMany { arrayCurrency ->
+                Flux.fromIterable(arrayCurrency)
+                    .map { formatCurrencyInfo(it, it.currencyCodeA, it.currencyCodeB) }
+            }
+            .flatMap { text ->
+                Mono.fromSupplier {
                     telegramService.sendMessage(
                         chatId = dispatchRequest.chatId,
-                        text = formatCurrencyInfo(it, it.currencyCodeA, it.currencyCodeB)
+                        text = text
                     )
                 }
-                val session: UpdateSession = dispatchRequest.updateSession.apply {
-                    state = CONVERSATION_STARTED
+            }.subscribeOn(Schedulers.boundedElastic())
+            .flatMap {
+                Mono.fromSupplier {
+                    dispatchRequest.updateSession.apply { state = CONVERSATION_STARTED }
                 }
-                userSessionService.saveSession(dispatchRequest.chatId, session)
-                menuCommandHandler.handle(dispatchRequest)
             }
+            .flatMap { session ->
+                userSessionService.saveSession(dispatchRequest.chatId, session)
+                Mono.just(session)
+            }
+            .then(
+                Mono.fromSupplier {
+                    menuCommandHandler.handle(dispatchRequest)
+                })
+            .subscribe()
     }
 
     private fun formatCurrencyInfo(mongoCurrency: MongoCurrency, codeA: Int, codeB: Int): String {

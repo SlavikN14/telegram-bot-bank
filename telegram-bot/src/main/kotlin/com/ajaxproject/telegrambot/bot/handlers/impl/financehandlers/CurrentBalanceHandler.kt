@@ -11,8 +11,9 @@ import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
-import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
 @BackToMainMenu
@@ -30,15 +31,23 @@ class CurrentBalanceHandler(
     @BackToMainMenuCommand
     override fun handle(dispatchRequest: UpdateRequest) {
         financeRequestNatsService.requestToGetCurrentBalance(dispatchRequest.chatId)
-            .subscribe { balance ->
-                telegramService.sendMessage(
-                    chatId = dispatchRequest.chatId,
-                    text = "${textService.readText(CURRENT_BALANCE.name)} $balance",
-                )
-                val session: UpdateSession = dispatchRequest.updateSession.apply {
-                    state = ConversationState.CONVERSATION_STARTED
-                }
-                userSessionService.saveSession(dispatchRequest.chatId, session)
+            .flatMap { balance ->
+                Mono.fromSupplier {
+                    telegramService.sendMessage(
+                        chatId = dispatchRequest.chatId,
+                        text = "${textService.readText(CURRENT_BALANCE.name)} $balance",
+                    )
+                }.subscribeOn(Schedulers.boundedElastic())
             }
+            .flatMap {
+                Mono.fromSupplier {
+                    dispatchRequest.updateSession.apply { state = ConversationState.CONVERSATION_STARTED }
+                }
+            }
+            .flatMap { session ->
+                userSessionService.saveSession(dispatchRequest.chatId, session)
+                Mono.just(session)
+            }
+            .subscribe()
     }
 }

@@ -11,6 +11,8 @@ import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
 @BackToMainMenu
@@ -28,16 +30,16 @@ class DeleteDataHandler(
     @BackToMainMenuCommand
     override fun handle(dispatchRequest: UpdateRequest) {
         val chatId = dispatchRequest.chatId
-
         userService.deleteUserById(chatId)
+            .then(financeRequestNatsService.requestToRemoveAllFinances(chatId))
+            .flatMap {
+                Mono.fromSupplier {
+                    telegramService.sendMessage(
+                        chatId = chatId,
+                        text = textService.readText(DATA_IS_DELETED.name)
+                    )
+                }.subscribeOn(Schedulers.boundedElastic())
+            }
             .subscribe()
-
-        financeRequestNatsService.requestToRemoveAllFinances(chatId)
-            .subscribe()
-
-        telegramService.sendMessage(
-            chatId = chatId,
-            text = textService.readText(DATA_IS_DELETED.name)
-        )
     }
 }

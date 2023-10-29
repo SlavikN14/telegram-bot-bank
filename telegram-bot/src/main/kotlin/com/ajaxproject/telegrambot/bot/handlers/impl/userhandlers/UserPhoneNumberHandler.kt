@@ -12,8 +12,10 @@ import com.ajaxproject.telegrambot.bot.service.UserService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.isTextMessage
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
-import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Component
 class UserPhoneNumberHandler(
@@ -33,18 +35,26 @@ class UserPhoneNumberHandler(
         val phoneNumber = dispatchRequest.update.message.text
         val chatId = dispatchRequest.chatId
 
-        if (!phoneNumber.contains(REGEX_PHONE_NUMBER)) {
-            telegramService.sendMessage(chatId, textService.readText(WRONG_NUMBER_TEXT.name))
-            return
-        }
-
-        userService.addUser(MongoUser(chatId, phoneNumber))
-            .doOnNext {
-                menuCommandHandler.handle(dispatchRequest)
-                val session: UpdateSession = dispatchRequest.updateSession.apply {
-                    state = CONVERSATION_STARTED
+        Mono.just(phoneNumber)
+            .filter { it.contains(REGEX_PHONE_NUMBER) }
+            .switchIfEmpty {
+                Mono.fromSupplier { telegramService.sendMessage(chatId, textService.readText(WRONG_NUMBER_TEXT.name)) }
+                    .then(Mono.empty())
+            }.subscribeOn(Schedulers.boundedElastic())
+            .flatMap { userService.addUser(MongoUser(chatId, it)) }
+            .flatMap {
+                Mono.fromSupplier {
+                    dispatchRequest.updateSession.apply { state = CONVERSATION_STARTED }
                 }
+            }
+            .flatMap { session ->
                 userSessionService.saveSession(dispatchRequest.chatId, session)
+                Mono.just(session)
+            }
+            .flatMap {
+                Mono.fromSupplier {
+                    menuCommandHandler.handle(dispatchRequest)
+                }
             }
             .subscribe()
     }
