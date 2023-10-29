@@ -45,8 +45,8 @@ class GetCurrencyExchangeRateHandler(
                         chatId = dispatchRequest.chatId,
                         text = text
                     )
-                }
-            }.subscribeOn(Schedulers.boundedElastic())
+                }.subscribeOn(Schedulers.boundedElastic())
+            }
             .flatMap {
                 Mono.fromSupplier {
                     dispatchRequest.updateSession.apply { state = CONVERSATION_STARTED }
@@ -59,7 +59,7 @@ class GetCurrencyExchangeRateHandler(
             .then(
                 Mono.fromSupplier {
                     menuCommandHandler.handle(dispatchRequest)
-                })
+                }).subscribeOn(Schedulers.boundedElastic())
             .subscribe()
     }
 

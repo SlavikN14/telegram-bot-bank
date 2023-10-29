@@ -48,8 +48,8 @@ class GetFinancesModelsHandler(
                         chatId = dispatchRequest.chatId,
                         text = financeResponse.toString()
                     )
-                }
-            }.subscribeOn(Schedulers.boundedElastic())
+                }.subscribeOn(Schedulers.boundedElastic())
+            }
             .flatMap {
                 Mono.fromSupplier {
                     dispatchRequest.updateSession.apply { state = CONVERSATION_STARTED }
@@ -60,6 +60,7 @@ class GetFinancesModelsHandler(
                 Mono.just(session)
             }
             .then(returnToMainMenu(dispatchRequest))
+            .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
     }
 

@@ -39,8 +39,9 @@ class UserPhoneNumberHandler(
             .filter { it.contains(REGEX_PHONE_NUMBER) }
             .switchIfEmpty {
                 Mono.fromSupplier { telegramService.sendMessage(chatId, textService.readText(WRONG_NUMBER_TEXT.name)) }
+                    .subscribeOn(Schedulers.boundedElastic())
                     .then(Mono.empty())
-            }.subscribeOn(Schedulers.boundedElastic())
+            }
             .flatMap { userService.addUser(MongoUser(chatId, it)) }
             .flatMap {
                 Mono.fromSupplier {

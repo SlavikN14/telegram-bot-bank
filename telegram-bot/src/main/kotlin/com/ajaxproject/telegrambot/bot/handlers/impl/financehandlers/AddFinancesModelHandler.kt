@@ -47,10 +47,12 @@ class AddFinancesModelHandler(
             .filter { it.matches(Regex("[+-]\\d+ [^\\n\\r]+\$")) }
             .switchIfEmpty {
                 Mono.fromSupplier { sendMessageIfDataIsNotCorrect(chatId) }
+                    .subscribeOn(Schedulers.boundedElastic())
                     .then(Mono.empty())
-            }.subscribeOn(Schedulers.boundedElastic())
+            }
             .flatMap {
                 sendRequestToCreateFinance(dispatchRequest, financeData)
+                    .subscribeOn(Schedulers.boundedElastic())
             }
             .flatMap {
                 Mono.fromSupplier {
