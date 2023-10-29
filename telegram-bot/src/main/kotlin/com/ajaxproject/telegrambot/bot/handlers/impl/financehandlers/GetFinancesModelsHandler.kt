@@ -2,16 +2,21 @@ package com.ajaxproject.telegrambot.bot.handlers.impl.financehandlers
 
 import com.ajaxproject.financemodels.enums.Finance
 import com.ajaxproject.telegrambot.bot.dto.toFinanceResponse
+import com.ajaxproject.telegrambot.bot.enums.Buttons.BACK_TO_MENU_BUTTON
+import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_INCOMES
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_EXPENSES
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
+import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.handlers.impl.MenuCommandHandler
 import com.ajaxproject.telegrambot.bot.service.FinanceRequestNatsService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
+import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
+import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
+import org.telegram.telegrambots.meta.api.objects.Message
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
@@ -21,7 +26,7 @@ class GetFinancesModelsHandler(
     private val telegramService: TelegramService,
     private val financeRequestNatsService: FinanceRequestNatsService,
     private val userSessionService: UserSessionService,
-    private val menuCommandHandler: MenuCommandHandler,
+    private val textService: TextService,
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
@@ -54,11 +59,26 @@ class GetFinancesModelsHandler(
                 userSessionService.saveSession(dispatchRequest.chatId, session)
                 Mono.just(session)
             }
-            .then(
-                Mono.fromSupplier {
-                    menuCommandHandler.handle(dispatchRequest)
-                })
+            .then(returnToMainMenu(dispatchRequest))
             .subscribe()
+    }
+
+    private fun returnToMainMenu(dispatchRequest: UpdateRequest): Mono<Message> {
+        return Mono.fromSupplier {
+            telegramService.sendMessage(
+                chatId = dispatchRequest.chatId,
+                text = textService.readText(BACK_TO_MENU.name),
+                replyKeyboard = KeyboardUtils.run {
+                    inlineKeyboard(
+                        inlineRowKeyboard(
+                            inlineButton(
+                                textService.readText(BACK_TO_MENU_BUTTON.name), MENU.command
+                            )
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private fun String.checkCommandIncomeOrExpense(): Finance {

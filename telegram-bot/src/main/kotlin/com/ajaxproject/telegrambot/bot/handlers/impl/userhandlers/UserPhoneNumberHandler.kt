@@ -54,7 +54,7 @@ class UserPhoneNumberHandler(
             .flatMap {
                 Mono.fromSupplier {
                     menuCommandHandler.handle(dispatchRequest)
-                }
+                }.subscribeOn(Schedulers.boundedElastic())
             }
             .subscribe()
     }
