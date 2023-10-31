@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.Disposable
 import reactor.core.publisher.Mono
 
 @Service
@@ -16,14 +15,14 @@ class MonobankService(
 ) {
 
     @Scheduled(fixedRate = 300000)
-    fun getCurrencyExchangeRates(): Disposable {
-        return webClient.get()
+    fun getCurrencyExchangeRates() {
+        webClient.get()
             .retrieve()
             .bodyToMono(String::class.java)
             .flatMap { response ->
                 parseResponse(response)
             }
-            .doOnNext { currencyExchangeService.addAllCurrency(it) }
+            .flatMap { currencyExchangeService.addAllCurrency(it) }
             .doOnSuccess { log.info("Updated data in the database") }
             .doOnError { error ->
                 log.error("HTTP request failed with error: ${error.message}")
