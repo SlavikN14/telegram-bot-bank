@@ -1,16 +1,18 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl.currencyhandlers
 
-import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_USD
-import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_EUR
+import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_EUR_BUTTON
+import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_USD_BUTTON
 import com.ajaxproject.telegrambot.bot.enums.Commands
-import com.ajaxproject.telegrambot.bot.enums.Currency
-import com.ajaxproject.telegrambot.bot.enums.TextPropertyName
+import com.ajaxproject.telegrambot.bot.enums.Currency.EUR
+import com.ajaxproject.telegrambot.bot.enums.Currency.USD
+import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.CURRENCY_TEXT
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
 class CurrencyButtonHandler(
@@ -22,18 +24,24 @@ class CurrencyButtonHandler(
         return isCommand(request.update, Commands.CURRENCY.command)
     }
 
-    override fun handle(dispatchRequest: UpdateRequest) {
-        telegramService.sendMessage(
+    override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
+        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
+        return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = textService.readText(TextPropertyName.CURRENCY_TEXT.name),
+            text = localizationText?.get(CURRENCY_TEXT.name)
+                .toString(),
             replyKeyboard = KeyboardUtils.run {
-                inlineKeyboard(
-                    inlineRowKeyboard(
-                        inlineButton(textService.readText(GET_CURRENCY_USD.name), Currency.USD.code.toString()),
-                        inlineButton(textService.readText(GET_CURRENCY_EUR.name), Currency.EUR.code.toString())
+                inlineKeyboardInOneRow(
+                    inlineButton(
+                        localizationText?.get(GET_CURRENCY_USD_BUTTON.name).toString(),
+                        USD.code.toString()
+                    ),
+                    inlineButton(
+                        localizationText?.get(GET_CURRENCY_EUR_BUTTON.name).toString(),
+                        EUR.code.toString()
                     )
                 )
             }
-        )
+        ).thenReturn(Unit)
     }
 }

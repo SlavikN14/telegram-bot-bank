@@ -5,7 +5,6 @@ import com.ajaxproject.telegrambot.bot.enums.Currency.EUR
 import com.ajaxproject.telegrambot.bot.enums.Currency.UAH
 import com.ajaxproject.telegrambot.bot.enums.Currency.USD
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
-import com.ajaxproject.telegrambot.bot.handlers.impl.MenuCommandHandler
 import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import com.ajaxproject.telegrambot.bot.service.CurrencyExchangeService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
@@ -14,14 +13,12 @@ import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 
 @Component
 class GetCurrencyExchangeRateHandler(
     private val telegramService: TelegramService,
     private val currencyExchangeService: CurrencyExchangeService,
     private val userSessionService: UserSessionService,
-    private val menuCommandHandler: MenuCommandHandler,
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
@@ -31,36 +28,31 @@ class GetCurrencyExchangeRateHandler(
         )
     }
 
-    override fun handle(dispatchRequest: UpdateRequest) {
+    override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
         val callbackQueryCode = dispatchRequest.update.callbackQuery.data.toInt()
 
-        currencyExchangeService.getCurrencyByCode(callbackQueryCode)
+        return currencyExchangeService.getCurrencyByCode(callbackQueryCode)
             .flatMapMany { arrayCurrency ->
                 Flux.fromIterable(arrayCurrency)
                     .map { formatCurrencyInfo(it, it.currencyCodeA, it.currencyCodeB) }
             }
             .flatMap { text ->
-                Mono.fromSupplier {
-                    telegramService.sendMessage(
-                        chatId = dispatchRequest.chatId,
-                        text = text
-                    )
-                }.subscribeOn(Schedulers.boundedElastic())
+                telegramService.sendMessage(
+                    chatId = dispatchRequest.chatId,
+                    text = text
+                )
             }
             .flatMap {
-                Mono.fromSupplier {
-                    dispatchRequest.updateSession.apply { state = CONVERSATION_STARTED }
-                }
-            }
-            .flatMap { session ->
-                userSessionService.saveSession(dispatchRequest.chatId, session)
-                Mono.just(session)
+                userSessionService.updateSession(
+                    CONVERSATION_STARTED,
+                    dispatchRequest.chatId,
+                    dispatchRequest.updateSession.localization
+                )
             }
             .then(
-                Mono.fromSupplier {
-                    menuCommandHandler.handle(dispatchRequest)
-                }).subscribeOn(Schedulers.boundedElastic())
-            .subscribe()
+                telegramService.returnToMainMenu(dispatchRequest)
+            )
+            .thenReturn(Unit)
     }
 
     private fun formatCurrencyInfo(mongoCurrency: MongoCurrency, codeA: Int, codeB: Int): String {
@@ -79,9 +71,7 @@ private fun Int.findNameByCode(): String {
         UAH.code -> UAH.name
         EUR.code -> EUR.name
         USD.code -> USD.name
-        else -> {
-            throw NotFindCodeException("Code not found")
-        }
+        else -> throw NotFindCodeException("Code not found")
     }
 }
 

@@ -1,15 +1,15 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl.financehandlers
 
 import com.ajaxproject.telegrambot.bot.enums.Commands
-import com.ajaxproject.telegrambot.bot.enums.ConversationState
+import com.ajaxproject.telegrambot.bot.enums.ConversationState.WAITING_FOR_ADD_FINANCE
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
-import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateSession
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
 class AddFinancesButtonHandler(
@@ -22,14 +22,19 @@ class AddFinancesButtonHandler(
         return isCommand(request.update, Commands.ADD_FINANCE.command)
     }
 
-    override fun handle(dispatchRequest: UpdateRequest) {
-        telegramService.sendMessage(
+    override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
+        return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = textService.readText(TextPropertyName.ADD_FINANCE_TEXT.name)
+            text = textService.textMap[dispatchRequest.updateSession.localization]
+                ?.get(TextPropertyName.ADD_FINANCE_TEXT.name).toString()
         )
-        val session: UpdateSession = dispatchRequest.updateSession.apply {
-            state = ConversationState.WAITING_FOR_ADD_FINANCE
-        }
-        userSessionService.saveSession(dispatchRequest.chatId, session)
+            .then(
+                userSessionService.updateSession(
+                    WAITING_FOR_ADD_FINANCE,
+                    dispatchRequest.chatId,
+                    dispatchRequest.updateSession.localization
+                )
+            )
+            .thenReturn(Unit)
     }
 }

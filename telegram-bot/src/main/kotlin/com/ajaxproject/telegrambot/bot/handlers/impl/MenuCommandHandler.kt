@@ -1,11 +1,11 @@
 package com.ajaxproject.telegrambot.bot.handlers.impl
 
 import com.ajaxproject.telegrambot.bot.enums.Buttons.DELETE_DATA_BUTTON
-import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_RATE
-import com.ajaxproject.telegrambot.bot.enums.Buttons.MANAGE_FINANCES_MENU
-import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_BALANCE
-import com.ajaxproject.telegrambot.bot.enums.Commands.DELETE_DATA
+import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENCY_RATE_BUTTON
+import com.ajaxproject.telegrambot.bot.enums.Buttons.GET_CURRENT_BALANCE_BUTTON
+import com.ajaxproject.telegrambot.bot.enums.Buttons.MANAGE_FINANCES_MENU_BUTTON
 import com.ajaxproject.telegrambot.bot.enums.Commands.CURRENCY
+import com.ajaxproject.telegrambot.bot.enums.Commands.DELETE_DATA
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_CURRENT_BALANCE
 import com.ajaxproject.telegrambot.bot.enums.Commands.MANAGE_FINANCES
 import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
@@ -17,6 +17,7 @@ import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
 class MenuCommandHandler(
@@ -28,26 +29,31 @@ class MenuCommandHandler(
         return isCommand(request.update, MENU.command) && CONVERSATION_STARTED == request.updateSession.state
     }
 
-    override fun handle(dispatchRequest: UpdateRequest) {
-        telegramService.sendMessage(
+    override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
+        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
+        return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = textService.readText(MENU_TEXT.name),
+            text = localizationText?.get(MENU_TEXT.name).toString(),
             replyKeyboard = KeyboardUtils.run {
-                inlineKeyboard(
-                    inlineRowKeyboard(
-                        inlineButton(textService.readText(GET_CURRENCY_RATE.name), CURRENCY.command)
+                inlineKeyboardWithManyRows(
+                    inlineButton(
+                        localizationText?.get(GET_CURRENCY_RATE_BUTTON.name).toString(),
+                        CURRENCY.command
                     ),
-                    inlineRowKeyboard(
-                        inlineButton(textService.readText(MANAGE_FINANCES_MENU.name), MANAGE_FINANCES.command)
+                    inlineButton(
+                        localizationText?.get(MANAGE_FINANCES_MENU_BUTTON.name).toString(),
+                        MANAGE_FINANCES.command
                     ),
-                    inlineRowKeyboard(
-                        inlineButton(textService.readText(GET_CURRENCY_BALANCE.name), GET_CURRENT_BALANCE.command)
+                    inlineButton(
+                        localizationText?.get(GET_CURRENT_BALANCE_BUTTON.name).toString(),
+                        GET_CURRENT_BALANCE.command
                     ),
-                    inlineRowKeyboard(
-                        inlineButton(textService.readText(DELETE_DATA_BUTTON.name), DELETE_DATA.command)
+                    inlineButton(
+                        localizationText?.get(DELETE_DATA_BUTTON.name).toString(),
+                        DELETE_DATA.command
                     )
                 )
             }
-        )
+        ).thenReturn(Unit)
     }
 }
