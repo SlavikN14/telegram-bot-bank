@@ -11,5 +11,5 @@ interface FinanceRepository {
 
     fun save(finance: MongoFinance): Mono<MongoFinance>
 
-    fun removeAllById(userId: Long)
+    fun removeAllById(userId: Long): Mono<Unit>
 }

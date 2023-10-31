@@ -27,12 +27,12 @@ class FinanceRepositoryImpl(
         return mongoTemplate.find(query, MongoFinance::class.java)
     }
 
-    override fun removeAllById(userId: Long) {
+    override fun removeAllById(userId: Long): Mono<Unit> {
         val query: Query = Query().addCriteria(
             Criteria.where("userId").`is`(userId)
         )
-        mongoTemplate.remove(query, MongoFinance::class.java)
-            .subscribe()
+        return mongoTemplate.remove(query, MongoFinance::class.java)
+            .thenReturn(Unit)
     }
 
     override fun save(finance: MongoFinance): Mono<MongoFinance> {
