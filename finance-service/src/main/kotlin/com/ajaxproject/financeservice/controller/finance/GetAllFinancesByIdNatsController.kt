@@ -24,15 +24,11 @@ class GetAllFinancesByIdNatsController(
 
     override fun handle(request: GetAllFinancesByIdRequest): Mono<GetAllFinancesByIdResponse> {
         return financeService.getAllFinancesByUserId(request.userId, request.financeType.toFinanceEnum())
-            .map {
-                buildSuccessResponse(
-                    it.map { mongoFinance -> mongoFinance.toProtoFinance() }
-                )
-            }
+            .map { it.toProtoFinance() }
+            .collectList()
+            .map { buildSuccessResponse(it) }
             .onErrorResume {
-                buildFailureResponse(
-                    it.message.toString()
-                ).toMono()
+                buildFailureResponse(it.message ?: "Unknown error").toMono()
             }
     }
 

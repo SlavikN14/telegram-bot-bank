@@ -20,10 +20,10 @@ class GetCurrentBalanceNatsController(
     override val parser: Parser<GetCurrentBalanceRequest> = GetCurrentBalanceRequest.parser()
 
     override fun handle(request: GetCurrentBalanceRequest): Mono<GetCurrentBalanceResponse> {
-        return financeService.getCurrencyBalance(request.userId)
+        return financeService.getCurrentBalance(request.userId)
             .map { buildSuccessResponse(it) }
             .onErrorResume {
-                buildFailureResponse(it.message.toString()).toMono()
+                buildFailureResponse(it.message ?: "Unknown error").toMono()
             }
     }
 

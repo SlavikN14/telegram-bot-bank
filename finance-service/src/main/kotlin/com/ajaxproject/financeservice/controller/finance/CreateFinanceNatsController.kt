@@ -26,9 +26,7 @@ class CreateFinanceNatsController(
         return financeService.addFinance(request.finance.toMongoFinance())
             .map { buildSuccessResponse(it.toProtoFinance()) }
             .onErrorResume {
-                buildFailureResponse(
-                    it.message.toString()
-                ).toMono()
+                buildFailureResponse(it.message ?: "Unknown error").toMono()
             }
     }
 

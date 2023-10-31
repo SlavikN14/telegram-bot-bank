@@ -23,7 +23,7 @@ class DeleteFinanceByIdNatsController(
         return financeService.removeAllFinancesByUserId(request.userId)
             .map { buildSuccessResponse() }
             .onErrorResume {
-                buildFailureResponse(it.message.toString()).toMono()
+                buildFailureResponse(it.message ?: "Unknown error").toMono()
             }
     }
 
