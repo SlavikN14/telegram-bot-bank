@@ -13,13 +13,12 @@ class CurrencyExchangeService(
     private val currencyExchangeRepository: CurrencyExchangeRepositoryImpl,
 ) {
 
-    fun addAllCurrency(arrayCurrency: Array<MonobankCurrencyExchangeResponse>) {
-        Flux.fromArray(arrayCurrency)
+    fun addAllCurrency(arrayCurrency: Array<MonobankCurrencyExchangeResponse>): Mono<List<MongoCurrency>> {
+        return Flux.fromArray(arrayCurrency)
             .map { it.toEntity() }
             .flatMap { currencyExchangeRepository.save(it) }
-            .subscribe()
+            .collectList()
     }
-
 
     fun getCurrencyByCode(code: Int): Mono<List<MongoCurrency>> {
         return currencyExchangeRepository.findByCode(code)
