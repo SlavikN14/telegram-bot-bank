@@ -1,15 +1,18 @@
 package com.ajaxproject.financeservice.service
 
-import com.ajaxproject.financeservice.repository.FinanceRepository
 import com.ajaxproject.financemodels.enums.Finance
 import com.ajaxproject.financemodels.enums.Finance.EXPENSE
 import com.ajaxproject.financemodels.enums.Finance.INCOME
 import com.ajaxproject.financemodels.models.MongoFinance
+import com.ajaxproject.financeservice.repository.FinanceRepository
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 import java.util.*
 
 @Service
@@ -17,9 +20,8 @@ class FinanceService(
     private val financeRepositoryImpl: FinanceRepository,
 ) {
 
-    fun getAllFinancesByUserId(userId: Long, financeType: Finance): Mono<List<MongoFinance>> {
+    fun getAllFinancesByUserId(userId: Long, financeType: Finance): Flux<MongoFinance> {
         return financeRepositoryImpl.findByUserIdAndFinanceType(userId, financeType)
-            .collectList()
     }
 
     fun addFinance(finance: MongoFinance): Mono<MongoFinance> {
@@ -27,16 +29,19 @@ class FinanceService(
     }
 
     fun removeAllFinancesByUserId(userId: Long): Mono<Unit> {
-        return Mono.just(financeRepositoryImpl.removeAllById(userId))
+        return financeRepositoryImpl.removeAllById(userId)
     }
 
-    fun getCurrencyBalance(userId: Long): Mono<Double> {
-        return Mono.zip(
-            getAllFinancesByUserId(userId, EXPENSE)
-                .map { list -> list.sumOf { it.amount } },
-            getAllFinancesByUserId(userId, INCOME)
-                .map { list -> list.sumOf { it.amount } })
-            .flatMap { finances -> (finances.t2.minus(finances.t1)).toMono() }
+    fun getCurrentBalance(userId: Long): Mono<Double> {
+        return Flux.zip(
+            getAllFinancesByUserId(userId, INCOME).collectList(),
+            getAllFinancesByUserId(userId, EXPENSE).collectList()
+        )
+            .map { (incomes, expenses) ->
+                incomes.sumOf { it.amount } - expenses.sumOf { it.amount }
+            }
+            .switchIfEmpty(0.0.toMono())
+            .next()
     }
 }
 
