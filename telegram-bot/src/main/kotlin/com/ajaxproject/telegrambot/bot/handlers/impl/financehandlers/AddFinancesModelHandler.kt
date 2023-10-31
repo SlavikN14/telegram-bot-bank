@@ -18,13 +18,14 @@ import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.isTextMessage
+import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Message
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
-import java.util.*
+import java.util.Date
 
 @Component
 class AddFinancesModelHandler(
@@ -68,10 +69,10 @@ class AddFinancesModelHandler(
         val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(FAILED_ADD_FINANCE_TEXT.name).toString(),
+            text = localizationText?.get(FAILED_ADD_FINANCE_TEXT.name).textIsNotUploaded(),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardInOneRow(
-                    inlineButton(localizationText?.get(BACK_TO_MENU_BUTTON.name).toString(), MENU.command)
+                    inlineButton(localizationText?.get(BACK_TO_MENU_BUTTON.name).textIsNotUploaded(), MENU.command)
                 )
             }
         )
@@ -81,11 +82,17 @@ class AddFinancesModelHandler(
         val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(SUCCESSFUL_ADD_FINANCE_TEXT.name).toString(),
+            text = localizationText?.get(SUCCESSFUL_ADD_FINANCE_TEXT.name).textIsNotUploaded(),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardInOneRow(
-                    inlineButton(localizationText?.get(ADD_FINANCE_AGAIN_BUTTON.name).toString(), ADD_FINANCE.command),
-                    inlineButton(localizationText?.get(BACK_TO_MENU_BUTTON.name).toString(), MENU.command)
+                    inlineButton(
+                        localizationText?.get(ADD_FINANCE_AGAIN_BUTTON.name).textIsNotUploaded(),
+                        ADD_FINANCE.command
+                    ),
+                    inlineButton(
+                        localizationText?.get(BACK_TO_MENU_BUTTON.name).textIsNotUploaded(),
+                        MENU.command
+                    )
                 )
             }
         )

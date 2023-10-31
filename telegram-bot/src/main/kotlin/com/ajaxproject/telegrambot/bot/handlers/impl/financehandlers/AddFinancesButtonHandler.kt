@@ -7,6 +7,7 @@ import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
+import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -26,7 +27,7 @@ class AddFinancesButtonHandler(
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
             text = textService.textMap[dispatchRequest.updateSession.localization]
-                ?.get(TextPropertyName.ADD_FINANCE_TEXT.name).toString()
+                ?.get(TextPropertyName.ADD_FINANCE_TEXT.name).textIsNotUploaded()
         )
             .then(
                 userSessionService.updateSession(

@@ -42,3 +42,7 @@ class TextService {
 fun Update.isTextMessage(): Boolean = hasMessage() && message.hasText()
 
 class FileNameNotFoundException(message: String) : Exception(message)
+
+fun String?.textIsNotUploaded(): String {
+    return this ?: "Text has not been uploaded"
+}

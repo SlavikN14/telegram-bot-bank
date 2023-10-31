@@ -11,6 +11,7 @@ import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.FINANCE_MANAGE_TEX
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
+import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
@@ -30,12 +31,21 @@ class FinanceManageButtonsHandler(
         val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(FINANCE_MANAGE_TEXT.name).toString(),
+            text = localizationText?.get(FINANCE_MANAGE_TEXT.name).textIsNotUploaded(),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardWithManyRows(
-                    inlineButton(localizationText?.get(ADD_FINANCE_BUTTON.name).toString(), ADD_FINANCE.command),
-                    inlineButton(localizationText?.get(GET_ALL_INCOMES_BUTTON.name).toString(), GET_INCOMES.command),
-                    inlineButton(localizationText?.get(GET_ALL_EXPENSES_BUTTON.name).toString(), GET_EXPENSES.command)
+                    inlineButton(
+                        localizationText?.get(ADD_FINANCE_BUTTON.name).textIsNotUploaded(),
+                        ADD_FINANCE.command
+                    ),
+                    inlineButton(
+                        localizationText?.get(GET_ALL_INCOMES_BUTTON.name).textIsNotUploaded(),
+                        GET_INCOMES.command
+                    ),
+                    inlineButton(
+                        localizationText?.get(GET_ALL_EXPENSES_BUTTON.name).textIsNotUploaded(),
+                        GET_EXPENSES.command
+                    )
                 )
             }
         ).thenReturn(Unit)

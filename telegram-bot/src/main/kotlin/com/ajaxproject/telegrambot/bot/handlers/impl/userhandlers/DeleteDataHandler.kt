@@ -7,6 +7,7 @@ import com.ajaxproject.telegrambot.bot.service.FinanceClient
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserService
+import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -31,8 +32,7 @@ class DeleteDataHandler(
                 telegramService.sendMessage(
                     chatId = chatId,
                     text = textService.textMap[dispatchRequest.updateSession.localization]
-                        ?.get(DATA_IS_DELETED_TEXT.name)
-                        .toString()
+                        ?.get(DATA_IS_DELETED_TEXT.name).textIsNotUploaded()
                 )
             }.thenReturn(Unit)
     }

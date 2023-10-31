@@ -2,6 +2,7 @@ package com.ajaxproject.financeservice.controller.finance
 
 import com.ajaxproject.financeservice.controller.NatsController
 import com.ajaxproject.financeservice.service.FinanceService
+import com.ajaxproject.financeservice.service.toUnknownError
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdResponse
@@ -23,7 +24,7 @@ class DeleteFinanceByIdNatsController(
         return financeService.removeAllFinancesByUserId(request.userId)
             .map { buildSuccessResponse() }
             .onErrorResume {
-                buildFailureResponse(it.message ?: "Unknown error").toMono()
+                buildFailureResponse(it.message.toUnknownError()).toMono()
             }
     }
 

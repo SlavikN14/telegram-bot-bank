@@ -4,6 +4,7 @@ import com.ajaxproject.financeservice.controller.NatsController
 import com.ajaxproject.financeservice.service.FinanceService
 import com.ajaxproject.financeservice.service.toFinanceEnum
 import com.ajaxproject.financeservice.service.toProtoFinance
+import com.ajaxproject.financeservice.service.toUnknownError
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdRequest
@@ -28,7 +29,7 @@ class GetAllFinancesByIdNatsController(
             .collectList()
             .map { buildSuccessResponse(it) }
             .onErrorResume {
-                buildFailureResponse(it.message ?: "Unknown error").toMono()
+                buildFailureResponse(it.message.toUnknownError()).toMono()
             }
     }
 

@@ -47,11 +47,11 @@ class TelegramService(
         val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(BACK_TO_MENU_TEXT.name).toString(),
+            text = localizationText?.get(BACK_TO_MENU_TEXT.name).textIsNotUploaded(),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardWithManyRows(
                     inlineButton(
-                        localizationText?.get(BACK_TO_MENU_BUTTON.name).toString(),
+                        localizationText?.get(BACK_TO_MENU_BUTTON.name).textIsNotUploaded(),
                         Commands.MENU.command
                     )
                 )

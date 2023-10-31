@@ -14,6 +14,7 @@ import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.MENU_TEXT
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
+import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
@@ -33,23 +34,23 @@ class MenuCommandHandler(
         val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(MENU_TEXT.name).toString(),
+            text = localizationText?.get(MENU_TEXT.name).textIsNotUploaded(),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardWithManyRows(
                     inlineButton(
-                        localizationText?.get(GET_CURRENCY_RATE_BUTTON.name).toString(),
+                        localizationText?.get(GET_CURRENCY_RATE_BUTTON.name).textIsNotUploaded(),
                         CURRENCY.command
                     ),
                     inlineButton(
-                        localizationText?.get(MANAGE_FINANCES_MENU_BUTTON.name).toString(),
+                        localizationText?.get(MANAGE_FINANCES_MENU_BUTTON.name).textIsNotUploaded(),
                         MANAGE_FINANCES.command
                     ),
                     inlineButton(
-                        localizationText?.get(GET_CURRENT_BALANCE_BUTTON.name).toString(),
+                        localizationText?.get(GET_CURRENT_BALANCE_BUTTON.name).textIsNotUploaded(),
                         GET_CURRENT_BALANCE.command
                     ),
                     inlineButton(
-                        localizationText?.get(DELETE_DATA_BUTTON.name).toString(),
+                        localizationText?.get(DELETE_DATA_BUTTON.name).textIsNotUploaded(),
                         DELETE_DATA.command
                     )
                 )

@@ -4,6 +4,7 @@ import com.ajaxproject.financeservice.controller.NatsController
 import com.ajaxproject.financeservice.service.FinanceService
 import com.ajaxproject.financeservice.service.toMongoFinance
 import com.ajaxproject.financeservice.service.toProtoFinance
+import com.ajaxproject.financeservice.service.toUnknownError
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
@@ -26,7 +27,7 @@ class CreateFinanceNatsController(
         return financeService.addFinance(request.finance.toMongoFinance())
             .map { buildSuccessResponse(it.toProtoFinance()) }
             .onErrorResume {
-                buildFailureResponse(it.message ?: "Unknown error").toMono()
+                buildFailureResponse(it.message.toUnknownError()).toMono() //TODO: create extension to message
             }
     }
 

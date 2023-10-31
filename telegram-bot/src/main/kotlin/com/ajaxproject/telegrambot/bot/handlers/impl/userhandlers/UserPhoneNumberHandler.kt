@@ -11,8 +11,8 @@ import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.isTextMessage
+import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -46,12 +46,9 @@ class UserPhoneNumberHandler(
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
             text = textService.textMap[dispatchRequest.updateSession.localization]?.get(WRONG_NUMBER_TEXT.name)
-                .toString()
+                .textIsNotUploaded()
         )
-            .doOnNext {
-                log.error("Wrong phone number: {}", phoneNumber)
-            }
-            .then(Mono.empty())
+            .then(Mono.error(NumberISNotCorrectException("Wrong phone number: $phoneNumber")))
     }
 
     private fun addUser(dispatchRequest: UpdateRequest, phoneNumber: String): Mono<Unit> {
@@ -71,6 +68,7 @@ class UserPhoneNumberHandler(
     companion object {
         val REGEX_PHONE_NUMBER =
             "^\\+\\d{12}\$".toRegex()
-        private val log = LoggerFactory.getLogger(UserPhoneNumberHandler::class.java)
     }
 }
+
+class NumberISNotCorrectException(message: String) : Exception(message)
