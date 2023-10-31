@@ -4,12 +4,12 @@ import com.ajaxproject.telegrambot.bot.dto.MonobankCurrencyExchangeResponse
 import com.ajaxproject.telegrambot.bot.utils.JsonUtils
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
-@Service
-class MonobankService(
+@Component
+class MonobankClient(
     private val currencyExchangeService: CurrencyExchangeService,
     private val webClient: WebClient,
 ) {
@@ -34,6 +34,6 @@ class MonobankService(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(MonobankService::class.java)
+        private val log = LoggerFactory.getLogger(MonobankClient::class.java)
     }
 }

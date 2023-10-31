@@ -15,12 +15,12 @@ import com.ajaxproject.telegrambot.bot.dto.toProtoFinance
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
 import io.nats.client.Connection
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 
-@Service
+@Component
 class FinanceClient(
     private val connection: Connection,
 ) {
