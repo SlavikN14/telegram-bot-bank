@@ -6,8 +6,7 @@ import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.mongodb.core.mapping.Document
-import java.util.*
-
+import java.util.Date
 @TypeAlias("Finances")
 @Document(value = COLLECTION_NAME)
 data class MongoFinance(

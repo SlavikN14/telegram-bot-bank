@@ -4,7 +4,7 @@ import com.ajaxproject.financemodels.enums.Finance
 import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
-import java.util.*
+import java.util.Date
 
 data class FinanceResponse(
     val amount: Double,

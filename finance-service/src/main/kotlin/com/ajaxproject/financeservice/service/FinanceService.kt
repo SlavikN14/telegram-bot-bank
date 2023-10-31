@@ -10,10 +10,11 @@ import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
-import java.util.*
+import java.util.Date
 
 @Service
 class FinanceService(
@@ -33,16 +34,30 @@ class FinanceService(
     }
 
     fun getCurrentBalance(userId: Long): Mono<Double> {
-        return Flux.zip(
-            getAllFinancesByUserId(userId, INCOME).collectList(),
-            getAllFinancesByUserId(userId, EXPENSE).collectList()
+        return Mono.zip(
+            getAllIncomesByUserId(userId),
+            getAllExpensesByUserId(userId)
         )
-            .map { (incomes, expenses) ->
-                incomes.sumOf { it.amount } - expenses.sumOf { it.amount }
-            }
-            .switchIfEmpty(0.0.toMono())
-            .next()
+            .map { (incomes, expenses) -> incomes - expenses }
     }
+
+    private fun getAllIncomesByUserId(userId: Long): Mono<Double> {
+        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, INCOME)
+            .collectList()
+            .map { incomes -> incomes.sumOf { it.amount } }
+            .switchIfEmpty { 0.0.toMono() }
+    }
+
+    private fun getAllExpensesByUserId(userId: Long): Mono<Double> {
+        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, EXPENSE)
+            .collectList()
+            .map { incomes -> incomes.sumOf { it.amount } }
+            .switchIfEmpty { 0.0.toMono() }
+    }
+}
+
+fun String?.toUnknownError(): String {
+    return this ?: "Unknown error"
 }
 
 fun MongoFinance.toProtoFinance(): FinanceMessage {

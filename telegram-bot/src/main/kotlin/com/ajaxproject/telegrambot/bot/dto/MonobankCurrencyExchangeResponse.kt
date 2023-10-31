@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.bot.dto
 
 import com.ajaxproject.telegrambot.bot.models.MongoCurrency
-import java.util.*
+import java.util.Date
 
 data class MonobankCurrencyExchangeResponse(
     val id: String?,
