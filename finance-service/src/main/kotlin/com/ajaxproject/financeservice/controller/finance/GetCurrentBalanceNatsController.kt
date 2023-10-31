@@ -37,4 +37,3 @@ class GetCurrentBalanceNatsController(
             failureBuilder.setMessage("Finances find failed: $message")
         }.build()
 }
-

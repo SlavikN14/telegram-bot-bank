@@ -37,7 +37,8 @@ class GetCurrentBalanceHandler(
             }
             .flatMap {
                 userSessionService.updateSession(
-                    CONVERSATION_STARTED, dispatchRequest.chatId,
+                    CONVERSATION_STARTED,
+                    dispatchRequest.chatId,
                     dispatchRequest.updateSession.localization
                 )
             }
