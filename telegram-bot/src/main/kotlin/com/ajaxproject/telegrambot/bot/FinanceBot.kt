@@ -23,21 +23,17 @@ class FinanceBot(
         Mono.just(update)
             .filter { update.hasMessage() || update.hasCallbackQuery() }
             .map { toUpdateRequest(it) }
-            .map { telegramUpdateDispatcher.dispatch(it) }
-            .doOnNext { isDispatched -> logNotDispatched(isDispatched, update) }
+            .flatMap { telegramUpdateDispatcher.dispatch(it) }
+            .doOnNext { logNotDispatched(update) }
             .subscribeOn(Schedulers.boundedElastic())
             .subscribe()
     }
 
-    private fun logNotDispatched(isDispatched: Boolean, update: Update) {
+    private fun logNotDispatched(update: Update) {
         val userId: Long = (update.message?.from?.id ?: update.callbackQuery?.message?.from?.id) as Long
         val textFromUser: String = (update.message?.text ?: update.callbackQuery?.message?.text).toString()
 
-        if (isDispatched) {
-            log.info("Update from user: userId={}, updateDetails={}", userId, textFromUser)
-        } else {
-            log.warn("Received unexpected update from user: userId={}, updateDetails={}", userId, textFromUser)
-        }
+        log.info("Update from user: userId={}, updateDetails={}", userId, textFromUser)
     }
 
     private fun toUpdateRequest(update: Update): UpdateRequest {
