@@ -55,13 +55,13 @@ class AddFinancesModelHandler(
             .flatMap {
                 sendMessageCreateFinanceIsSuccessful(dispatchRequest)
             }
-            .then(
+            .flatMap {
                 userSessionService.updateSession(
                     CONVERSATION_STARTED,
                     dispatchRequest.chatId,
                     dispatchRequest.updateSession.localization
                 )
-            )
+            }
             .thenReturn(Unit)
     }
 

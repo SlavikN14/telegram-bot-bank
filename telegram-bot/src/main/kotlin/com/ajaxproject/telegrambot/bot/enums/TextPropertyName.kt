@@ -11,7 +11,8 @@ enum class TextPropertyName {
     SUCCESSFUL_ADD_FINANCE_TEXT,
     FAILED_ADD_FINANCE_TEXT,
     BACK_TO_MENU_TEXT,
-    DATA_IS_DELETED_TEXT
+    DATA_IS_DELETED_TEXT,
+    NO_FINANCE_TEXT
 }
 
 enum class Buttons {

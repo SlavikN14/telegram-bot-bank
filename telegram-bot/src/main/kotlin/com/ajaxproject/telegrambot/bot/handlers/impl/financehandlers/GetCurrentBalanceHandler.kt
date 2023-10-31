@@ -42,7 +42,6 @@ class GetCurrentBalanceHandler(
                     dispatchRequest.updateSession.localization
                 )
             }
-            .then(telegramService.returnToMainMenu(dispatchRequest))
             .thenReturn(Unit)
     }
 }

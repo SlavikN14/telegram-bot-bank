@@ -5,6 +5,7 @@ import com.ajaxproject.telegrambot.bot.enums.Currency.EUR
 import com.ajaxproject.telegrambot.bot.enums.Currency.UAH
 import com.ajaxproject.telegrambot.bot.enums.Currency.USD
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
+import com.ajaxproject.telegrambot.bot.handlers.impl.MenuCommandHandler
 import com.ajaxproject.telegrambot.bot.models.MongoCurrency
 import com.ajaxproject.telegrambot.bot.service.CurrencyExchangeService
 import com.ajaxproject.telegrambot.bot.service.TelegramService
@@ -19,6 +20,7 @@ class GetCurrencyExchangeRateHandler(
     private val telegramService: TelegramService,
     private val currencyExchangeService: CurrencyExchangeService,
     private val userSessionService: UserSessionService,
+    private val menuCommandHandler: MenuCommandHandler
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
@@ -50,7 +52,7 @@ class GetCurrencyExchangeRateHandler(
                 )
             }
             .then(
-                telegramService.returnToMainMenu(dispatchRequest)
+                menuCommandHandler.handle(dispatchRequest)
             )
             .thenReturn(Unit)
     }

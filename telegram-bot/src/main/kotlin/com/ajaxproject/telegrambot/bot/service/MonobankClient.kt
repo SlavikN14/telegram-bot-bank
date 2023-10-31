@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
 class MonobankClient(
@@ -26,7 +27,9 @@ class MonobankClient(
             .doOnSuccess { log.info("Updated data in the database") }
             .doOnError { error ->
                 log.error("HTTP request failed with error: ${error.message}")
-            }.subscribe()
+            }
+            .subscribeOn(Schedulers.boundedElastic())
+            .subscribe()
     }
 
     private fun parseResponse(response: String): Mono<Array<MonobankCurrencyExchangeResponse>> {
