@@ -11,7 +11,6 @@ import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.isTextMessage
-import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -45,8 +44,7 @@ class UserPhoneNumberHandler(
     private fun sendMessageWrongPhoneNumber(dispatchRequest: UpdateRequest, phoneNumber: String): Mono<String> {
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = textService.textMap[dispatchRequest.updateSession.localization]?.get(WRONG_NUMBER_TEXT.name)
-                .textIsNotUploaded()
+            text = textService.getText(dispatchRequest.updateSession.localization, WRONG_NUMBER_TEXT.name)
         )
             .then(Mono.error(NumberISNotCorrectException("Wrong phone number: $phoneNumber")))
     }

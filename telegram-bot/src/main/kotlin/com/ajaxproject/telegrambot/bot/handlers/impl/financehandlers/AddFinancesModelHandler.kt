@@ -18,7 +18,6 @@ import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
 import com.ajaxproject.telegrambot.bot.service.isTextMessage
-import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
@@ -36,8 +35,7 @@ class AddFinancesModelHandler(
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
-        return WAITING_FOR_ADD_FINANCE == request.updateSession.state &&
-            request.update.isTextMessage()
+        return WAITING_FOR_ADD_FINANCE == request.updateSession.state && request.update.isTextMessage()
     }
 
     override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
@@ -66,31 +64,35 @@ class AddFinancesModelHandler(
     }
 
     private fun sendMessageDataIsNotCorrect(dispatchRequest: UpdateRequest): Mono<Message> {
-        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(FAILED_ADD_FINANCE_TEXT.name).textIsNotUploaded(),
+            text = textService.getText(dispatchRequest.updateSession.localization, FAILED_ADD_FINANCE_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardInOneRow(
-                    inlineButton(localizationText?.get(BACK_TO_MENU_BUTTON.name).textIsNotUploaded(), MENU.command)
+                    inlineButton(
+                        textService.getText(
+                            dispatchRequest.updateSession.localization,
+                            BACK_TO_MENU_BUTTON.name
+                        ),
+                        MENU.command
+                    )
                 )
             }
         )
     }
 
     private fun sendMessageCreateFinanceIsSuccessful(dispatchRequest: UpdateRequest): Mono<Message> {
-        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(SUCCESSFUL_ADD_FINANCE_TEXT.name).textIsNotUploaded(),
+            text = textService.getText(dispatchRequest.updateSession.localization, SUCCESSFUL_ADD_FINANCE_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardInOneRow(
                     inlineButton(
-                        localizationText?.get(ADD_FINANCE_AGAIN_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(dispatchRequest.updateSession.localization, ADD_FINANCE_AGAIN_BUTTON.name),
                         ADD_FINANCE.command
                     ),
                     inlineButton(
-                        localizationText?.get(BACK_TO_MENU_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(dispatchRequest.updateSession.localization, BACK_TO_MENU_BUTTON.name),
                         MENU.command
                     )
                 )

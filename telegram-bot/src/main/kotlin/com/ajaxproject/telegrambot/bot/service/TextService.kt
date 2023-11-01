@@ -1,6 +1,7 @@
 package com.ajaxproject.telegrambot.bot.service
 
 import com.ajaxproject.telegrambot.bot.enums.Localization
+import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import jakarta.annotation.PostConstruct
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
@@ -37,12 +38,15 @@ class TextService {
             .onErrorMap { FileNameNotFoundException("File not found for some Localization") }
             .subscribe()
     }
+
+    fun getText(localization: Localization, textPropertyName: String): String {
+        return textMap[localization]?.get(textPropertyName)
+            ?: throw TextNotFoundException("Text not found")
+    }
 }
 
 fun Update.isTextMessage(): Boolean = hasMessage() && message.hasText()
 
-class FileNameNotFoundException(message: String) : Exception(message)
+class TextNotFoundException(message: String) : Exception(message)
 
-fun String?.textIsNotUploaded(): String {
-    return this ?: "Text has not been uploaded"
-}
+class FileNameNotFoundException(message: String) : Exception(message)

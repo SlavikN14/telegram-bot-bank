@@ -11,7 +11,6 @@ import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.FINANCE_MANAGE_TEX
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
-import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
@@ -28,22 +27,21 @@ class FinanceManageButtonsHandler(
     }
 
     override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
-        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(FINANCE_MANAGE_TEXT.name).textIsNotUploaded(),
+            text = textService.getText(dispatchRequest.updateSession.localization, FINANCE_MANAGE_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardWithManyRows(
                     inlineButton(
-                        localizationText?.get(ADD_FINANCE_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(dispatchRequest.updateSession.localization, ADD_FINANCE_BUTTON.name),
                         ADD_FINANCE.command
                     ),
                     inlineButton(
-                        localizationText?.get(GET_ALL_INCOMES_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(dispatchRequest.updateSession.localization, GET_ALL_INCOMES_BUTTON.name),
                         GET_INCOMES.command
                     ),
                     inlineButton(
-                        localizationText?.get(GET_ALL_EXPENSES_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(dispatchRequest.updateSession.localization, GET_ALL_EXPENSES_BUTTON.name),
                         GET_EXPENSES.command
                     )
                 )

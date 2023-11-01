@@ -8,7 +8,6 @@ import com.ajaxproject.telegrambot.bot.service.FinanceClient
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
-import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
@@ -26,8 +25,10 @@ class GetCurrentBalanceHandler(
     }
 
     override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
-        val currentBalance = textService.textMap[dispatchRequest.updateSession.localization]
-            ?.get(CURRENT_BALANCE_BUTTON.name).textIsNotUploaded()
+        val currentBalance = textService.getText(
+            dispatchRequest.updateSession.localization,
+            CURRENT_BALANCE_BUTTON.name
+        )
         return financeClient.getCurrentBalance(dispatchRequest.chatId)
             .flatMap { balance ->
                 telegramService.sendMessage(

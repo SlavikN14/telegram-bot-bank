@@ -10,7 +10,6 @@ import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
-import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
@@ -61,7 +60,7 @@ class LanguageButtonsHandler(
             .flatMap { session ->
                 telegramService.sendMessage(
                     chatId = dispatchRequest.chatId,
-                    text = textService.textMap[session.localization]?.get(WELCOME_TEXT.name).textIsNotUploaded(),
+                    text = textService.getText(session.localization, WELCOME_TEXT.name)
                 )
             }
             .thenReturn(Unit)

@@ -9,12 +9,10 @@ import com.ajaxproject.telegrambot.bot.enums.Commands.DELETE_DATA
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_CURRENT_BALANCE
 import com.ajaxproject.telegrambot.bot.enums.Commands.MANAGE_FINANCES
 import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
-import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.MENU_TEXT
 import com.ajaxproject.telegrambot.bot.handlers.UserRequestHandler
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
-import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
@@ -27,30 +25,41 @@ class MenuCommandHandler(
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
-        return isCommand(request.update, MENU.command) && CONVERSATION_STARTED == request.updateSession.state
+        return isCommand(request.update, MENU.command)
     }
 
     override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
-        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(MENU_TEXT.name).textIsNotUploaded(),
+            text = textService.getText(dispatchRequest.updateSession.localization, MENU_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardWithManyRows(
                     inlineButton(
-                        localizationText?.get(GET_CURRENCY_RATE_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(
+                            dispatchRequest.updateSession.localization,
+                            GET_CURRENCY_RATE_BUTTON.name
+                        ),
                         CURRENCY.command
                     ),
                     inlineButton(
-                        localizationText?.get(MANAGE_FINANCES_MENU_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(
+                            dispatchRequest.updateSession.localization,
+                            MANAGE_FINANCES_MENU_BUTTON.name
+                        ),
                         MANAGE_FINANCES.command
                     ),
                     inlineButton(
-                        localizationText?.get(GET_CURRENT_BALANCE_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(
+                            dispatchRequest.updateSession.localization,
+                            GET_CURRENT_BALANCE_BUTTON.name
+                        ),
                         GET_CURRENT_BALANCE.command
                     ),
                     inlineButton(
-                        localizationText?.get(DELETE_DATA_BUTTON.name).textIsNotUploaded(),
+                        textService.getText(
+                            dispatchRequest.updateSession.localization,
+                            DELETE_DATA_BUTTON.name
+                        ),
                         DELETE_DATA.command
                     )
                 )

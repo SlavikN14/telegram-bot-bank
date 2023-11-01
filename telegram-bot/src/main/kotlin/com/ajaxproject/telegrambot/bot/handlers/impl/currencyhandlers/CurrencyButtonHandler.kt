@@ -25,19 +25,17 @@ class CurrencyButtonHandler(
     }
 
     override fun handle(dispatchRequest: UpdateRequest): Mono<Unit> {
-        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(CURRENCY_TEXT.name)
-                .toString(),
+            text = textService.getText(dispatchRequest.updateSession.localization, CURRENCY_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardInOneRow(
                     inlineButton(
-                        localizationText?.get(GET_CURRENCY_USD_BUTTON.name).toString(),
+                        textService.getText(dispatchRequest.updateSession.localization, GET_CURRENCY_USD_BUTTON.name),
                         USD.code.toString()
                     ),
                     inlineButton(
-                        localizationText?.get(GET_CURRENCY_EUR_BUTTON.name).toString(),
+                        textService.getText(dispatchRequest.updateSession.localization, GET_CURRENCY_EUR_BUTTON.name),
                         EUR.code.toString()
                     )
                 )

@@ -3,9 +3,9 @@ package com.ajaxproject.telegrambot.bot.handlers.impl.financehandlers
 import com.ajaxproject.financemodels.enums.Finance
 import com.ajaxproject.telegrambot.bot.dto.toFinanceResponse
 import com.ajaxproject.telegrambot.bot.enums.Buttons
-import com.ajaxproject.telegrambot.bot.enums.Commands
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_EXPENSES
 import com.ajaxproject.telegrambot.bot.enums.Commands.GET_INCOMES
+import com.ajaxproject.telegrambot.bot.enums.Commands.MENU
 import com.ajaxproject.telegrambot.bot.enums.ConversationState.CONVERSATION_STARTED
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.BACK_TO_MENU_TEXT
 import com.ajaxproject.telegrambot.bot.enums.TextPropertyName.NO_FINANCE_TEXT
@@ -14,7 +14,6 @@ import com.ajaxproject.telegrambot.bot.service.FinanceClient
 import com.ajaxproject.telegrambot.bot.service.TelegramService
 import com.ajaxproject.telegrambot.bot.service.TextService
 import com.ajaxproject.telegrambot.bot.service.UserSessionService
-import com.ajaxproject.telegrambot.bot.service.textIsNotUploaded
 import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import com.ajaxproject.telegrambot.bot.utils.KeyboardUtils
 import org.springframework.stereotype.Component
@@ -67,14 +66,15 @@ class GetFinancesModelsHandler(
     fun returnNoFinanceMessage(dispatchRequest: UpdateRequest): Mono<Message> {
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = textService.textMap[dispatchRequest.updateSession.localization]
-                ?.get(NO_FINANCE_TEXT.name).textIsNotUploaded(),
+            text = textService.getText(dispatchRequest.updateSession.localization, NO_FINANCE_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardWithManyRows(
                     inlineButton(
-                        textService.textMap[dispatchRequest.updateSession.localization]
-                            ?.get(Buttons.BACK_TO_MENU_BUTTON.name).textIsNotUploaded(),
-                        callbackData = Commands.MENU.command
+                        textService.getText(
+                            dispatchRequest.updateSession.localization,
+                            Buttons.BACK_TO_MENU_BUTTON.name
+                        ),
+                        MENU.command
                     )
                 )
             }
@@ -82,15 +82,17 @@ class GetFinancesModelsHandler(
     }
 
     fun returnToMainMenu(dispatchRequest: UpdateRequest): Mono<Message> {
-        val localizationText = textService.textMap[dispatchRequest.updateSession.localization]
         return telegramService.sendMessage(
             chatId = dispatchRequest.chatId,
-            text = localizationText?.get(BACK_TO_MENU_TEXT.name).textIsNotUploaded(),
+            text = textService.getText(dispatchRequest.updateSession.localization, BACK_TO_MENU_TEXT.name),
             replyKeyboard = KeyboardUtils.run {
                 inlineKeyboardWithManyRows(
                     inlineButton(
-                        localizationText?.get(Buttons.BACK_TO_MENU_BUTTON.name).textIsNotUploaded(),
-                        Commands.MENU.command
+                        textService.getText(
+                            dispatchRequest.updateSession.localization,
+                            Buttons.BACK_TO_MENU_BUTTON.name
+                        ),
+                        MENU.command
                     )
                 )
             }
