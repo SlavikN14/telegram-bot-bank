@@ -1,7 +1,6 @@
 package com.ajaxproject.telegrambot.bot.service
 
 import com.ajaxproject.telegrambot.bot.enums.Localization
-import com.ajaxproject.telegrambot.bot.service.updatemodels.UpdateRequest
 import jakarta.annotation.PostConstruct
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
