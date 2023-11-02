@@ -4,13 +4,20 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
 object KeyboardUtils {
-    fun inlineKeyboard(vararg rows: List<InlineKeyboardButton>): InlineKeyboardMarkup {
+
+    fun inlineKeyboardInOneRow(vararg buttons: InlineKeyboardButton): InlineKeyboardMarkup {
         return InlineKeyboardMarkup.builder()
-            .keyboard(rows.toList())
+            .keyboardRow(buttons.toList())
             .build()
     }
 
-    fun inlineRowKeyboard(vararg buttons: InlineKeyboardButton): List<InlineKeyboardButton> = listOf(*buttons)
+    fun inlineKeyboardWithManyRows(vararg buttons: InlineKeyboardButton): InlineKeyboardMarkup {
+        val keyboardBuilder = InlineKeyboardMarkup.builder()
+        buttons.forEach { button ->
+            keyboardBuilder.keyboardRow(listOf(button))
+        }
+        return keyboardBuilder.build()
+    }
 
     fun inlineButton(name: String, callbackData: String): InlineKeyboardButton {
         return InlineKeyboardButton.builder()

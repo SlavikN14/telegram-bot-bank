@@ -9,9 +9,6 @@ bot:
   token: #secret
   username: FinanceManageBot
 
-text:
-  path: /texts/texts.properties
-
 mono:
   url: https://api.monobank.ua/bank/currency
 

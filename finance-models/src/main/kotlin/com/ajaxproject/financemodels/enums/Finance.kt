@@ -1,4 +1,4 @@
-package com.ajaxproject.financemodelsapi.enums
+package com.ajaxproject.financemodels.enums
 
 enum class Finance {
     INCOME,

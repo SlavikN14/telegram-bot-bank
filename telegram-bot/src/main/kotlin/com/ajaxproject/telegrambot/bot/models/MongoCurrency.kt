@@ -4,6 +4,7 @@ import com.ajaxproject.telegrambot.bot.models.MongoCurrency.Companion.COLLECTION
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.mongodb.core.mapping.Document
+import java.util.Date
 
 @TypeAlias("Currency")
 @Document(value = COLLECTION_NAME)
@@ -12,6 +13,7 @@ data class MongoCurrency(
     val id: String,
     var currencyCodeA: Int,
     var currencyCodeB: Int,
+    var date: Date,
     var rateBuy: Double,
     var rateSell: Double,
 ) {

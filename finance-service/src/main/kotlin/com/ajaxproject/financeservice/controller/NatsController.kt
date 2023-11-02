@@ -2,6 +2,7 @@ package com.ajaxproject.financeservice.controller
 
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
+import reactor.core.publisher.Mono
 
 interface NatsController<ReqT : GeneratedMessageV3, RespT : GeneratedMessageV3> {
 
@@ -9,5 +10,5 @@ interface NatsController<ReqT : GeneratedMessageV3, RespT : GeneratedMessageV3> 
 
     val parser: Parser<ReqT>
 
-    fun handle(request: ReqT): RespT
+    fun handle(request: ReqT): Mono<RespT>
 }

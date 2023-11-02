@@ -4,9 +4,9 @@ import com.ajaxproject.financeservice.repository.FinanceRepositoryImpl
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.financeservice.service.toProtoEnumFinance
 import com.ajaxproject.financeservice.service.toProtoFinance
-import com.ajaxproject.financemodelsapi.enums.Finance.EXPENSE
-import com.ajaxproject.financemodelsapi.enums.Finance.INCOME
-import com.ajaxproject.financemodelsapi.models.MongoFinance
+import com.ajaxproject.financemodels.enums.Finance.EXPENSE
+import com.ajaxproject.financemodels.enums.Finance.INCOME
+import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceResponse
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdRequest
@@ -63,7 +63,7 @@ class NatsControllerTest {
     @Test
     fun `should return expected finance when get all finance by request`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance)
+        financeRepository.save(testMongoIncomeFinance).block()
         val userIdSave = testMongoIncomeFinance.userId
         val financeTypeSave = testMongoIncomeFinance.financeType.toProtoEnumFinance()
 
@@ -90,11 +90,11 @@ class NatsControllerTest {
     @Test
     fun `should return expected message when delete finance`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance)
-        val financeId = testMongoIncomeFinance.id.toHexString()
+        financeRepository.save(testMongoIncomeFinance).block()
+        val financeId = testMongoIncomeFinance.userId
 
         val request: DeleteFinanceByIdRequest = DeleteFinanceByIdRequest.newBuilder()
-            .setId(financeId)
+            .setUserId(financeId)
             .build()
 
         val expectedResponse = DeleteFinanceByIdResponse.newBuilder().apply {
@@ -115,7 +115,7 @@ class NatsControllerTest {
     @Test
     fun `should return expected finance when save finance`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance)
+        financeRepository.save(testMongoIncomeFinance).block()
 
         val request: CreateFinanceRequest = CreateFinanceRequest.newBuilder()
             .setFinance(testMongoIncomeFinance.toProtoFinance())
@@ -148,8 +148,8 @@ class NatsControllerTest {
             date = Date()
         )
         financeRepository.run {
-            save(testExpenseFinance)
-            save(testMongoIncomeFinance)
+            save(testExpenseFinance).block()
+            save(testMongoIncomeFinance).block()
         }
         val userIdSave = testMongoIncomeFinance.userId
 

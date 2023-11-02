@@ -9,11 +9,6 @@ data class BotProperties @ConstructorBinding constructor(
     val username: String
 )
 
-@ConfigurationProperties(prefix = "text")
-data class TextProperties @ConstructorBinding constructor(
-    val path: String
-)
-
 @ConfigurationProperties(prefix = "mono")
 data class MonobankProperties @ConstructorBinding constructor(
     val url: String

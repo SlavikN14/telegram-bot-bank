@@ -1,10 +1,10 @@
 package com.ajaxproject.telegrambot.bot.dto
 
-import com.ajaxproject.financemodelsapi.enums.Finance
-import com.ajaxproject.financemodelsapi.models.MongoFinance
+import com.ajaxproject.financemodels.enums.Finance
+import com.ajaxproject.financemodels.models.MongoFinance
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
-import java.util.*
+import java.util.Date
 
 data class FinanceResponse(
     val amount: Double,
@@ -39,14 +39,12 @@ fun FinanceMessage.toMongoFinance(): MongoFinance {
     )
 }
 
-
 fun Finance.toProtoEnumFinance(): FinanceType {
     return when (this) {
         Finance.INCOME -> FinanceType.INCOME
         Finance.EXPENSE -> FinanceType.EXPENSE
     }
 }
-
 
 fun FinanceType.toFinanceEnum(): Finance {
     return when (this) {

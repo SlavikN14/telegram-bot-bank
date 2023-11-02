@@ -7,43 +7,43 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.objects.Update
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
 class FinanceBot(
-    val telegramUpdateDispatcher: TelegramUpdateDispatcher,
-    val userSessionService: UserSessionService,
-    val botProperties: BotProperties,
+    private val telegramUpdateDispatcher: TelegramUpdateDispatcher,
+    private val userSessionService: UserSessionService,
+    private val botProperties: BotProperties,
 ) : TelegramLongPollingBot(botProperties.token) {
 
     override fun getBotUsername(): String = botProperties.username
 
     override fun onUpdateReceived(update: Update) {
-        if ((!update.hasMessage() || !update.message.hasText()) && !update.hasCallbackQuery()) {
-            log.warn("Unexpected update from user")
-            return
-        }
+        Mono.just(update)
+            .filter { update.hasMessage() || update.hasCallbackQuery() }
+            .map { toUpdateRequest(it) }
+            .flatMap { telegramUpdateDispatcher.dispatch(it) }
+            .doOnNext { logNotDispatched(update) }
+            .subscribeOn(Schedulers.boundedElastic())
+            .subscribe()
+    }
 
-        val chatId = when {
-            update.message != null -> update.message.chatId
-            update.callbackQuery != null -> update.callbackQuery.message.chatId
-            else -> return
-        }
+    private fun logNotDispatched(update: Update) {
+        val userId: Long = (update.message?.from?.id ?: update.callbackQuery?.message?.from?.id) as Long
+        val textFromUser: String = (update.message?.text ?: update.callbackQuery?.message?.text).toString()
 
-        val updateRequest = UpdateRequest(
+        log.info("Update from user: userId={}, updateDetails={}", userId, textFromUser)
+    }
+
+    private fun toUpdateRequest(update: Update): UpdateRequest {
+        val chatId: Long = (update.message?.chatId ?: update.callbackQuery?.message?.chatId) as Long
+
+        return UpdateRequest(
             update = update,
             updateSession = userSessionService.getSession(chatId),
             chatId = chatId
         )
-
-        val isDispatched = telegramUpdateDispatcher.dispatch(updateRequest)
-
-        if (!isDispatched) {
-            log.warn(
-                "Received unexpected update from user: userId={}, updateDetails={}",
-                update.message.from.id,
-                update.message.text
-            )
-        }
     }
 
     companion object {

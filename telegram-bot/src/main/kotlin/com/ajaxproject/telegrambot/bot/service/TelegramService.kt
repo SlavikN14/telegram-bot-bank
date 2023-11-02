@@ -8,44 +8,38 @@ import org.telegram.telegrambots.bots.DefaultAbsSender
 import org.telegram.telegrambots.bots.DefaultBotOptions
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Service
 class TelegramService(
     private val botSender: FinanceBotSender,
 ) {
 
-    fun sendMessage(chatId: Long, text: String, replyKeyboard: ReplyKeyboard? = null): Message {
+    fun sendMessage(chatId: Long, text: String, replyKeyboard: ReplyKeyboard? = null): Mono<Message> {
         val sendMessage = SendMessage.builder().also { msg ->
             msg.text(text)
             msg.chatId(chatId)
             msg.replyMarkup(replyKeyboard)
         }.build()
-        return execute(sendMessage) ?: throw MessageIsNullException("Execute message is null")
+        return execute(sendMessage)
+            .subscribeOn(Schedulers.boundedElastic())
     }
 
-    fun deleteMessage(chatId: Long, messageId: Int) {
-        val deleteMessage = DeleteMessage.builder().also { msg ->
-            msg.messageId(messageId)
-            msg.chatId(chatId)
-        }.build()
-        botSender.execute(deleteMessage)
-    }
-
-    private fun execute(botApiMethod: BotApiMethod<Message>): Message? {
-        return botApiMethod.runCatching { botSender.execute(botApiMethod) }
-            .onFailure { log.error("Failed to execute bot method {}", botApiMethod, it) }
-            .getOrNull()
+    private fun execute(botApiMethod: BotApiMethod<Message>): Mono<Message> {
+        return Mono.fromCallable { botSender.execute(botApiMethod) }
+            .onErrorResume { error ->
+                log.error("Failed to execute bot method {}", botApiMethod, error)
+                Mono.empty()
+            }
     }
 
     companion object {
         private val log = LoggerFactory.getLogger(TelegramService::class.java)
     }
 }
-
-class MessageIsNullException(message: String) : Exception(message)
 
 @Component
 class FinanceBotSender(properties: BotProperties) : DefaultAbsSender(DefaultBotOptions(), properties.token)

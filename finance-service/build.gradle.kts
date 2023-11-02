@@ -11,13 +11,13 @@ dependencies {
 
     implementation("io.nats:jnats:2.16.14")
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("io.projectreactor:reactor-core:3.5.11")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
 
+    testImplementation("io.projectreactor:reactor-test:3.5.11")
     testImplementation("com.willowtreeapps.assertk:assertk:0.27.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

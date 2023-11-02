@@ -2,14 +2,17 @@ package com.ajaxproject.financeservice.controller.finance
 
 import com.ajaxproject.financeservice.controller.NatsController
 import com.ajaxproject.financeservice.service.FinanceService
-import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.financeservice.service.toFinanceEnum
+import com.ajaxproject.financeservice.service.toProtoFinance
+import com.ajaxproject.financeservice.service.toUnknownError
+import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdResponse
-import com.ajaxproject.financeservice.service.toProtoFinance
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class GetAllFinancesByIdNatsController(
@@ -20,13 +23,14 @@ class GetAllFinancesByIdNatsController(
 
     override val parser: Parser<GetAllFinancesByIdRequest> = GetAllFinancesByIdRequest.parser()
 
-    override fun handle(request: GetAllFinancesByIdRequest): GetAllFinancesByIdResponse = runCatching {
-        val getAllFinanceById =
-            financeService.getAllFinancesByUserId(request.userId, request.financeType.toFinanceEnum())
-
-        buildSuccessResponse(getAllFinanceById.map { it.toProtoFinance() })
-    }.getOrElse { exception ->
-        buildFailureResponse(exception.toString())
+    override fun handle(request: GetAllFinancesByIdRequest): Mono<GetAllFinancesByIdResponse> {
+        return financeService.getAllFinancesByUserId(request.userId, request.financeType.toFinanceEnum())
+            .map { it.toProtoFinance() }
+            .collectList()
+            .map { buildSuccessResponse(it) }
+            .onErrorResume {
+                buildFailureResponse(it.message.toUnknownError()).toMono()
+            }
     }
 
     private fun buildSuccessResponse(financeList: List<FinanceMessage>): GetAllFinancesByIdResponse =
@@ -40,4 +44,3 @@ class GetAllFinancesByIdNatsController(
                 .setMessage("Finances find failed: $message")
         }.build()
 }
-
