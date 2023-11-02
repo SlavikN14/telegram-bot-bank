@@ -43,15 +43,13 @@ class FinanceService(
 
     private fun getAllIncomesByUserId(userId: Long): Mono<Double> {
         return financeRepositoryImpl.findByUserIdAndFinanceType(userId, INCOME)
-            .collectList()
-            .map { incomes -> incomes.sumOf { it.amount } }
+            .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }
 
     private fun getAllExpensesByUserId(userId: Long): Mono<Double> {
         return financeRepositoryImpl.findByUserIdAndFinanceType(userId, EXPENSE)
-            .collectList()
-            .map { incomes -> incomes.sumOf { it.amount } }
+            .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }
 }
