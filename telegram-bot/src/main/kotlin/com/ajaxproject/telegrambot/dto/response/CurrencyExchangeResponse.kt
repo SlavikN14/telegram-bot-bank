@@ -1,9 +1,9 @@
-package com.ajaxproject.telegrambot.bot.dto
+package com.ajaxproject.telegrambot.dto.response
 
-import com.ajaxproject.telegrambot.bot.models.MongoCurrency
+import com.ajaxproject.telegrambot.model.MongoCurrency
 import java.util.Date
 
-data class MonobankCurrencyExchangeResponse(
+data class CurrencyExchangeResponse(
     val id: String?,
     val currencyCodeA: Int,
     val currencyCodeB: Int,
@@ -11,7 +11,7 @@ data class MonobankCurrencyExchangeResponse(
     var rateSell: Double,
 )
 
-fun MonobankCurrencyExchangeResponse.toEntity() = MongoCurrency(
+fun CurrencyExchangeResponse.toEntity() = MongoCurrency(
     id = "$currencyCodeA$currencyCodeB",
     currencyCodeA = currencyCodeA,
     currencyCodeB = currencyCodeB,

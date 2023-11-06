@@ -1,12 +1,12 @@
-package com.ajaxproject.telegrambot.bot.repository
+package com.ajaxproject.telegrambot.repository
 
-import com.ajaxproject.telegrambot.bot.models.MongoCurrency
+import com.ajaxproject.telegrambot.model.MongoCurrency
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 interface CurrencyExchangeRepository {
 
-    fun findByCode(code: Int): Flux<MongoCurrency>
+    fun findAllByCode(code: Int): Flux<MongoCurrency>
 
     fun findAll(): Flux<MongoCurrency>
 
