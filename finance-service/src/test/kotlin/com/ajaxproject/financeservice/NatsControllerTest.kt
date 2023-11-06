@@ -2,11 +2,9 @@ package com.ajaxproject.financeservice
 
 import com.ajaxproject.financeservice.repository.FinanceRepositoryImpl
 import com.ajaxproject.internalapi.NatsSubject
-import com.ajaxproject.financeservice.service.toProtoEnumFinance
-import com.ajaxproject.financeservice.service.toProtoFinance
-import com.ajaxproject.financemodels.enums.Finance.EXPENSE
-import com.ajaxproject.financemodels.enums.Finance.INCOME
-import com.ajaxproject.financemodels.models.MongoFinance
+import com.ajaxproject.financeservice.model.MongoFinance
+import com.ajaxproject.financeservice.model.toProtoFinance
+import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceResponse
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdRequest
@@ -24,7 +22,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.time.Duration
@@ -38,7 +36,7 @@ class NatsControllerTest {
     private lateinit var natsConnection: Connection
 
     @Autowired
-    private lateinit var mongoTemplate: MongoTemplate
+    private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
     private lateinit var financeRepository: FinanceRepositoryImpl
@@ -47,13 +45,14 @@ class NatsControllerTest {
     fun clean() {
         val query = Query.query(Criteria.where("userId").`is`(4757839801))
         mongoTemplate.remove(query, MongoFinance::class.java)
+            .block()
     }
 
     private val testMongoIncomeFinance: MongoFinance =
         MongoFinance(
             id = ObjectId(),
             userId = 4757839801,
-            financeType = INCOME,
+            financeType = FinanceType.INCOME,
             amount = 100.0,
             description = "Test Description",
             date = Date()
@@ -65,7 +64,7 @@ class NatsControllerTest {
         //GIVEN
         financeRepository.save(testMongoIncomeFinance).block()
         val userIdSave = testMongoIncomeFinance.userId
-        val financeTypeSave = testMongoIncomeFinance.financeType.toProtoEnumFinance()
+        val financeTypeSave = testMongoIncomeFinance.financeType
 
         val request = GetAllFinancesByIdRequest.newBuilder()
             .setUserId(userIdSave)
@@ -142,7 +141,7 @@ class NatsControllerTest {
         val testExpenseFinance = MongoFinance(
             id = ObjectId(),
             userId = 4757839801,
-            financeType = EXPENSE,
+            financeType = FinanceType.EXPENSE,
             amount = 50.0,
             description = "Test Description",
             date = Date()
