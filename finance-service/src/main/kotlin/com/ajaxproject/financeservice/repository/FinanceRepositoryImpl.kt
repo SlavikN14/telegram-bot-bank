@@ -1,7 +1,7 @@
 package com.ajaxproject.financeservice.repository
 
-import com.ajaxproject.financemodels.enums.Finance
-import com.ajaxproject.financemodels.models.MongoFinance
+import com.ajaxproject.financeservice.model.MongoFinance
+import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -16,7 +16,7 @@ class FinanceRepositoryImpl(
 
     override fun findByUserIdAndFinanceType(
         userId: Long,
-        financeType: Finance,
+        financeType: FinanceType,
     ): Flux<MongoFinance> {
         val query: Query = Query().addCriteria(
             Criteria.where("userId").`is`(userId)

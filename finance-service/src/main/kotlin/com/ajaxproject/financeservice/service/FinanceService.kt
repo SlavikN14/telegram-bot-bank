@@ -1,11 +1,7 @@
 package com.ajaxproject.financeservice.service
 
-import com.ajaxproject.financemodels.enums.Finance
-import com.ajaxproject.financemodels.enums.Finance.EXPENSE
-import com.ajaxproject.financemodels.enums.Finance.INCOME
-import com.ajaxproject.financemodels.models.MongoFinance
+import com.ajaxproject.financeservice.model.MongoFinance
 import com.ajaxproject.financeservice.repository.FinanceRepository
-import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -14,14 +10,13 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
-import java.util.Date
 
 @Service
 class FinanceService(
     private val financeRepositoryImpl: FinanceRepository,
 ) {
 
-    fun getAllFinancesByUserId(userId: Long, financeType: Finance): Flux<MongoFinance> {
+    fun getAllFinancesByUserId(userId: Long, financeType: FinanceType): Flux<MongoFinance> {
         return financeRepositoryImpl.findByUserIdAndFinanceType(userId, financeType)
     }
 
@@ -42,13 +37,13 @@ class FinanceService(
     }
 
     private fun getAllIncomesByUserId(userId: Long): Mono<Double> {
-        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, INCOME)
+        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, FinanceType.INCOME)
             .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }
 
     private fun getAllExpensesByUserId(userId: Long): Mono<Double> {
-        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, EXPENSE)
+        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, FinanceType.EXPENSE)
             .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }
@@ -56,38 +51,4 @@ class FinanceService(
 
 fun String?.toUnknownError(): String {
     return this ?: "Unknown error"
-}
-
-fun MongoFinance.toProtoFinance(): FinanceMessage {
-    return FinanceMessage.newBuilder()
-        .setUserId(userId)
-        .setFinanceType(financeType.toProtoEnumFinance())
-        .setAmount(amount)
-        .setDescription(description)
-        .build()
-}
-
-fun FinanceMessage.toMongoFinance(): MongoFinance {
-    return MongoFinance(
-        userId = userId,
-        financeType = financeType.toFinanceEnum(),
-        amount = amount,
-        description = description,
-        date = Date(),
-    )
-}
-
-fun Finance.toProtoEnumFinance(): FinanceType {
-    return when (this) {
-        INCOME -> FinanceType.INCOME
-        EXPENSE -> FinanceType.EXPENSE
-    }
-}
-
-fun FinanceType.toFinanceEnum(): Finance {
-    return when (this) {
-        FinanceType.INCOME -> INCOME
-        FinanceType.EXPENSE -> EXPENSE
-        else -> throw IllegalArgumentException("Unknown finance type")
-    }
 }
