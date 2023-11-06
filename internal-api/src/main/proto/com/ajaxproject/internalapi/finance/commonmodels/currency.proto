@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.ajaxproject.internalapi.finance.commonmodels;
+
+option java_multiple_files = true;
+
+message Currency{
+  string id = 1;
+  uint32 currency_code_A = 2;
+  uint32 currency_code_B = 3;
+  int64 date = 4;
+  double rate_buy = 5;
+  double rate_sell = 6;
+}
