@@ -17,8 +17,8 @@ class CurrencyKafkaProducer(
     private val kafkaSenderCurrencyUpdatedEvent: KafkaSender<String, CurrencyUpdatedEvent>,
 ) {
 
-    fun sendDeviceUpdatedEventToKafka(currency: MongoCurrency): Mono<Unit> =
-        Mono.fromSupplier { currency.toProtoCurrency().mapToDeviceUpdatedEvent() }
+    fun sendCurrencyUpdatedEventToKafka(currency: MongoCurrency): Mono<Unit> =
+        Mono.fromSupplier { currency.toProtoCurrency().mapToCurrencyUpdatedEvent() }
             .flatMap {
                 kafkaSenderCurrencyUpdatedEvent.send(buildKafkaUpdatedMessage(it)).next()
             }
@@ -34,7 +34,7 @@ class CurrencyKafkaProducer(
             null
         ).toMono()
 
-    private fun Currency.mapToDeviceUpdatedEvent(): CurrencyUpdatedEvent =
+    private fun Currency.mapToCurrencyUpdatedEvent(): CurrencyUpdatedEvent =
         CurrencyUpdatedEvent.newBuilder()
             .setCurrency(this)
             .build()

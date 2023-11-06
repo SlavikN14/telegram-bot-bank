@@ -22,7 +22,7 @@ class CurrencyExchangeService(
             .filter { checkCurrency(it) }
             .flatMap { currencyExchangeCacheableRepository.save(it) }
             .next()
-            .doMonoOnNext { kafkaProducer.sendDeviceUpdatedEventToKafka(it) }
+            .doMonoOnNext { kafkaProducer.sendCurrencyUpdatedEventToKafka(it) }
             .thenReturn(Unit)
     }
 
