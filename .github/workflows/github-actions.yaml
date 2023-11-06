@@ -2,9 +2,10 @@ name: Build
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: '*'
+    branches:
+      - '*'
 
 jobs:
   build:
@@ -16,6 +17,9 @@ jobs:
 
       - name: Start MongoDB container
         run: docker run -d --name mongo -p 27017:27017 mongo:latest
+
+      - name: Start Redis container
+        run: docker run -d --name redis -p 6379:6379 redis:latest
 
       - name: Start NATS container
         run: docker run -d --name nats -p 4222:4222 nats:latest
