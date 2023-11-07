@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.repository.impl
 
 import com.ajaxproject.telegrambot.model.MongoCurrency
-import com.ajaxproject.telegrambot.repository.CurrencyExchangeRepository
+import com.ajaxproject.telegrambot.repository.CurrencyRepository
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-@Repository
-class CurrencyExchangeMongoRepositoryImpl(
+@Repository("mongoCurrencyRepository")
+class CurrencyMongoRepository(
     private val mongoTemplate: ReactiveMongoTemplate,
-) : CurrencyExchangeRepository {
+) : CurrencyRepository {
 
     override fun findAllByCode(code: Int): Flux<MongoCurrency> {
         val query: Query = Query().addCriteria(

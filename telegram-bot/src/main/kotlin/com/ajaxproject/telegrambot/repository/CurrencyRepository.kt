@@ -4,7 +4,7 @@ import com.ajaxproject.telegrambot.model.MongoCurrency
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface CurrencyExchangeRepository {
+interface CurrencyRepository {
 
     fun findAllByCode(code: Int): Flux<MongoCurrency>
 
