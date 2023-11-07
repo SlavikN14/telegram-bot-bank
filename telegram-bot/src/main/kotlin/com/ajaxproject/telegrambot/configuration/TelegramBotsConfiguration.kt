@@ -3,7 +3,6 @@ package com.ajaxproject.telegrambot.configuration
 import com.ajaxproject.telegrambot.service.telegram.TelegramUpdateDispatcherService
 import com.ajaxproject.telegrambot.BotProperties
 import com.ajaxproject.telegrambot.MonobankProperties
-import com.ajaxproject.telegrambot.RedisProperties
 import io.nats.client.Connection
 import io.nats.client.Nats
 import org.springframework.beans.factory.annotation.Value
