@@ -1,7 +1,7 @@
 package com.ajaxproject.telegrambot.client
 
-import com.ajaxproject.telegrambot.dto.response.CurrencyExchangeResponse
-import com.ajaxproject.telegrambot.service.CurrencyExchangeService
+import com.ajaxproject.telegrambot.dto.response.CurrencyResponse
+import com.ajaxproject.telegrambot.service.CurrencyService
 import com.ajaxproject.telegrambot.util.JsonUtils
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -12,7 +12,7 @@ import reactor.core.scheduler.Schedulers
 
 @Component
 class MonobankClient(
-    private val currencyExchangeService: CurrencyExchangeService,
+    private val currencyExchangeService: CurrencyService,
     private val webClient: WebClient,
 ) {
 
@@ -33,8 +33,8 @@ class MonobankClient(
             .subscribe()
     }
 
-    private fun parseResponse(response: String): Mono<Array<CurrencyExchangeResponse>> {
-        return Mono.justOrEmpty(JsonUtils.GSON.fromJson(response, Array<CurrencyExchangeResponse>::class.java))
+    private fun parseResponse(response: String): Mono<Array<CurrencyResponse>> {
+        return Mono.justOrEmpty(JsonUtils.GSON.fromJson(response, Array<CurrencyResponse>::class.java))
     }
 
     companion object {

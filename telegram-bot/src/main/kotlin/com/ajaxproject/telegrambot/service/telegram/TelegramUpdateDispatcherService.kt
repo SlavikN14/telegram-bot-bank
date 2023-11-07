@@ -17,7 +17,7 @@ import reactor.kotlin.core.publisher.toMono
 class TelegramUpdateDispatcherService(
     private val userSessionService: UserSessionService,
     private val botProperties: BotProperties,
-    private val handlers: List<UserRequestHandler>
+    private val handlers: List<UserRequestHandler>,
 ) : TelegramLongPollingBot(botProperties.token) {
 
     override fun getBotUsername(): String = botProperties.username
@@ -54,7 +54,7 @@ class TelegramUpdateDispatcherService(
             .filter { it.isApplicable(updateRequest) }
             .flatMap {
                 it.handle(updateRequest)
-                    .then(Mono.just(true))
+                    .thenReturn(true)
             }
             .defaultIfEmpty(false)
             .toMono()

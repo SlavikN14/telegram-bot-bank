@@ -15,7 +15,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 
 @Configuration
-@EnableConfigurationProperties(BotProperties::class, MonobankProperties::class, RedisProperties::class)
+@EnableConfigurationProperties(BotProperties::class, MonobankProperties::class)
 class TelegramBotsConfiguration {
 
     @Bean
