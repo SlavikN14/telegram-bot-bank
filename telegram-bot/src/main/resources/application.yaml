@@ -28,5 +28,5 @@ nats:
   url: nats://localhost:4222
 
 redis-properties:
-  ttl:minutes: 5
+  ttl-minutes: 5
   prefix-key: currency-key-

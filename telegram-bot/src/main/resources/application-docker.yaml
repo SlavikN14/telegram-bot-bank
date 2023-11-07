@@ -19,5 +19,5 @@ nats:
   url: nats://nats:4222
 
 redis-properties:
-  ttl:minutes: 5
+  ttl-minutes: 5
   prefix-key: currency-key-
