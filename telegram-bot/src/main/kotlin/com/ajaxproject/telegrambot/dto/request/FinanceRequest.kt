@@ -12,11 +12,9 @@ data class FinanceRequest(
     val date: Date,
 )
 
-fun FinanceRequest.toProtoFinance(): FinanceMessage {
-    return FinanceMessage.newBuilder()
-        .setUserId(userId)
-        .setFinanceType(financeType)
-        .setAmount(amount)
-        .setDescription(description)
-        .build()
-}
+fun FinanceRequest.toProtoFinance(): FinanceMessage = FinanceMessage.newBuilder()
+    .setUserId(userId)
+    .setFinanceType(financeType)
+    .setAmount(amount)
+    .setDescription(description)
+    .build()

@@ -21,12 +21,10 @@ data class FinanceResponse(
         """.trimMargin()
 }
 
-fun FinanceMessage.toFinanceResponse(): FinanceResponse {
-    return FinanceResponse(
+fun FinanceMessage.toFinanceResponse(): FinanceResponse = FinanceResponse(
         userId = userId,
         financeType = financeType,
         amount = amount,
         description = description,
         date = Date(),
     )
-}

@@ -7,20 +7,19 @@ import com.ajaxproject.telegrambot.enums.Currency.USD
 import com.ajaxproject.telegrambot.handler.UserRequestHandler
 import com.ajaxproject.telegrambot.handler.impl.MenuCommandHandler
 import com.ajaxproject.telegrambot.model.MongoCurrency
-import com.ajaxproject.telegrambot.service.CurrencyExchangeService
+import com.ajaxproject.telegrambot.service.CurrencyService
 import com.ajaxproject.telegrambot.service.telegram.TelegramMessageService
 import com.ajaxproject.telegrambot.service.UserSessionService
 import com.ajaxproject.telegrambot.service.updatemodels.UpdateRequest
 import org.springframework.stereotype.Component
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Component
-class GetCurrencyExchangeRateHandler(
+class GetCurrencyRateHandler(
     private val telegramService: TelegramMessageService,
-    private val currencyExchangeService: CurrencyExchangeService,
+    private val currencyExchangeService: CurrencyService,
     private val userSessionService: UserSessionService,
-    private val menuCommandHandler: MenuCommandHandler
+    private val menuCommandHandler: MenuCommandHandler,
 ) : UserRequestHandler {
 
     override fun isApplicable(request: UpdateRequest): Boolean {
@@ -34,10 +33,7 @@ class GetCurrencyExchangeRateHandler(
         val callbackQueryCode = dispatchRequest.update.callbackQuery.data.toInt()
 
         return currencyExchangeService.getCurrencyByCode(callbackQueryCode)
-            .flatMapMany { arrayCurrency ->
-                Flux.fromIterable(arrayCurrency)
-                    .map { formatCurrencyInfo(it, it.currencyCodeA, it.currencyCodeB) }
-            }
+            .map { formatCurrencyInfo(it, callbackQueryCode, it.currencyCodeB) }
             .flatMap { text ->
                 telegramService.sendMessage(
                     chatId = dispatchRequest.chatId,

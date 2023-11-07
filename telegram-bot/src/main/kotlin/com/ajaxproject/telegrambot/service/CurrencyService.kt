@@ -1,23 +1,23 @@
 package com.ajaxproject.telegrambot.service
 
-import com.ajaxproject.telegrambot.dto.response.CurrencyExchangeResponse
+import com.ajaxproject.telegrambot.dto.response.CurrencyResponse
 import com.ajaxproject.telegrambot.dto.response.toEntity
 import com.ajaxproject.telegrambot.enums.Currency
 import com.ajaxproject.telegrambot.kafka.CurrencyKafkaProducer
 import com.ajaxproject.telegrambot.model.MongoCurrency
-import com.ajaxproject.telegrambot.repository.CacheableRepository
+import com.ajaxproject.telegrambot.repository.CurrencyRepository
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Component
-class CurrencyExchangeService(
-    private val currencyExchangeCacheableRepository: CacheableRepository<MongoCurrency>,
+class CurrencyService(
+    private val currencyExchangeCacheableRepository: CurrencyRepository,
     private val kafkaProducer: CurrencyKafkaProducer,
 ) {
 
-    fun addAllCurrency(arrayCurrency: Array<CurrencyExchangeResponse>): Mono<Unit> {
-        return Flux.fromArray(arrayCurrency)
+    fun addAllCurrency(currencies: Array<CurrencyResponse>): Mono<Unit> {
+        return Flux.fromArray(currencies)
             .map { it.toEntity() }
             .filter { checkCurrency(it) }
             .flatMap { currencyExchangeCacheableRepository.save(it) }
@@ -26,9 +26,8 @@ class CurrencyExchangeService(
             .thenReturn(Unit)
     }
 
-    fun getCurrencyByCode(code: Int): Mono<List<MongoCurrency>> {
-        return currencyExchangeCacheableRepository.findAllByKey(code.toString())
-            .collectList()
+    fun getCurrencyByCode(code: Int): Flux<MongoCurrency> {
+        return currencyExchangeCacheableRepository.findAllByCode(code)
     }
 
     private fun checkCurrency(currency: MongoCurrency): Boolean {

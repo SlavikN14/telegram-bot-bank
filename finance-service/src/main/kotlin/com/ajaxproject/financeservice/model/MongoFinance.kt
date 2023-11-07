@@ -14,7 +14,7 @@ import java.util.Date
 data class MongoFinance(
 
     @Id
-    val id: ObjectId = ObjectId(),
+    val id: ObjectId? = ObjectId(),
     val userId: Long,
     val financeType: FinanceType,
     val amount: Double,
@@ -27,21 +27,18 @@ data class MongoFinance(
     }
 }
 
-fun MongoFinance.toProtoFinance(): FinanceMessage {
-    return FinanceMessage.newBuilder()
-        .setUserId(userId)
-        .setFinanceType(financeType)
-        .setAmount(amount)
-        .setDescription(description)
-        .build()
-}
+fun MongoFinance.toProtoFinance(): FinanceMessage = FinanceMessage.newBuilder()
+    .setUserId(userId)
+    .setFinanceType(financeType)
+    .setAmount(amount)
+    .setDescription(description)
+    .build()
 
-fun FinanceMessage.toMongoFinance(): MongoFinance {
-    return MongoFinance(
+fun FinanceMessage.toMongoFinance(): MongoFinance =
+    MongoFinance(
         userId = userId,
         financeType = financeType,
         amount = amount,
         description = description,
         date = Date(),
     )
-}
