@@ -13,10 +13,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Start docker-compose
-        run: docker-compose up -d
+        uses: actions/checkout@
 
       - name: Setup JDK
         uses: actions/setup-java@v3
@@ -25,5 +22,18 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Assemble Gradle project
+        run: ./gradlew assemble
+
+      - name: Run Docker Compose
+        run: docker compose up --build --force-recreate -d
+
       - name: Build project
         run: ./gradlew build
+
+      - name: Shutdown
+        if: always()
+        run: docker compose down
