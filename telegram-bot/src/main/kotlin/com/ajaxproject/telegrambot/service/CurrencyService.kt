@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class CurrencyService(
-    private val currencyRedisRepository: CurrencyRepository,
+    private val currencyRepository: CurrencyRepository,
     private val kafkaProducer: CurrencyKafkaProducer,
 ) {
 
@@ -20,13 +20,13 @@ class CurrencyService(
         return Flux.fromArray(currencies)
             .map { it.toEntity() }
             .filter { checkCurrency(it) }
-            .flatMap { currencyRedisRepository.save(it) }
+            .flatMap { currencyRepository.save(it) }
             .doOnNext { kafkaProducer.sendCurrencyUpdatedEventToKafka(it) }
             .then(Mono.just(Unit))
     }
 
     fun getCurrencyByCode(code: Int): Mono<MongoCurrency> {
-        return currencyRedisRepository.findByCode(code)
+        return currencyRepository.findByCode(code)
     }
 
     private fun checkCurrency(currency: MongoCurrency): Boolean {

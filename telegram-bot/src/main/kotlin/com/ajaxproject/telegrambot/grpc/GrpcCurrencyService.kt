@@ -38,7 +38,7 @@ class GrpcCurrencyService(
 
     private fun buildFailureResponseStreamByCode(message: String): StreamCurrencyByCodeResponse =
         StreamCurrencyByCodeResponse.newBuilder().apply {
-            failureBuilder.setMessage("Currency find by code failed: $message")
+            failureBuilder.message = "Currency find by code failed: $message"
         }.build()
 }
 
