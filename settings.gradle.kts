@@ -4,4 +4,5 @@ include(
     "internal-api",
     "telegram-bot",
     "finance-service",
+    "finance-service:finance"
 )
