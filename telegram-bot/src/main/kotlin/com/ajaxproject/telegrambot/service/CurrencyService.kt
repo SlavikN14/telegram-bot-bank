@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class CurrencyService(
-    private val currencyExchangeCacheableRepository: CurrencyRepository,
+    private val currencyRedisRepository: CurrencyRepository,
     private val kafkaProducer: CurrencyKafkaProducer,
 ) {
 
@@ -20,22 +20,18 @@ class CurrencyService(
         return Flux.fromArray(currencies)
             .map { it.toEntity() }
             .filter { checkCurrency(it) }
-            .flatMap { currencyExchangeCacheableRepository.save(it) }
-            .next()
-            .doMonoOnNext { kafkaProducer.sendCurrencyUpdatedEventToKafka(it) }
-            .thenReturn(Unit)
+            .flatMap { currencyRedisRepository.save(it) }
+            .doOnNext { kafkaProducer.sendCurrencyUpdatedEventToKafka(it) }
+            .then(Mono.just(Unit))
     }
 
-    fun getCurrencyByCode(code: Int): Flux<MongoCurrency> {
-        return currencyExchangeCacheableRepository.findAllByCode(code)
+    fun getCurrencyByCode(code: Int): Mono<MongoCurrency> {
+        return currencyRedisRepository.findByCode(code)
     }
 
     private fun checkCurrency(currency: MongoCurrency): Boolean {
-        val currencyCodes = Currency.entries.map { it.code }
-        return currencyCodes.contains(currency.currencyCodeA) && currencyCodes.contains(currency.currencyCodeB)
+        return currency.currencyCodeB == Currency.UAH.code
+                && (currency.currencyCodeA == Currency.USD.code
+                || currency.currencyCodeA == Currency.EUR.code)
     }
-
 }
-
-fun <T : Any> Mono<T>.doMonoOnNext(onNext: (T) -> Mono<*>): Mono<T> = flatMap { onNext(it).thenReturn(it) }
-
