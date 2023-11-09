@@ -4,7 +4,7 @@ import com.ajaxproject.financeservice.finance.domain.Finance
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import org.bson.types.ObjectId
-import java.util.*
+import java.util.Date
 
 fun Finance.toProtoFinance(): FinanceMessage = FinanceMessage.newBuilder()
     .setUserId(userId)

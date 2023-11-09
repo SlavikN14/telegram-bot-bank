@@ -13,19 +13,19 @@ import reactor.kotlin.core.util.function.component2
 
 @Service
 class FinanceService(
-    private val financeRepositoryImpl: FinanceRepositoryOutPort,
+    private val financeRepository: FinanceRepositoryOutPort,
 ) : FinanceServiceInPort {
 
     override fun getAllFinancesByUserId(userId: Long, financeType: String): Flux<Finance> {
-        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, financeType)
+        return financeRepository.findByUserIdAndFinanceType(userId, financeType)
     }
 
     override fun saveFinance(finance: Finance): Mono<Finance> {
-        return financeRepositoryImpl.save(finance)
+        return financeRepository.save(finance)
     }
 
     override fun removeAllFinancesByUserId(userId: Long): Mono<Unit> {
-        return financeRepositoryImpl.removeAllById(userId)
+        return financeRepository.removeAllById(userId)
     }
 
     override fun getCurrentBalance(userId: Long): Mono<Double> {
@@ -37,13 +37,13 @@ class FinanceService(
     }
 
     private fun getAllIncomesByUserId(userId: Long): Mono<Double> {
-        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, "INCOME")
+        return financeRepository.findByUserIdAndFinanceType(userId, "INCOME")
             .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }
 
     private fun getAllExpensesByUserId(userId: Long): Mono<Double> {
-        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, "EXPENSE")
+        return financeRepository.findByUserIdAndFinanceType(userId, "EXPENSE")
             .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }

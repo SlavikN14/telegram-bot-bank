@@ -11,7 +11,6 @@ import java.util.Date
 @TypeAlias("Currency")
 @Document(value = COLLECTION_NAME)
 data class MongoCurrency(
-
     @Id
     @JsonProperty("id")
     val id: String,
