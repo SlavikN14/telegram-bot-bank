@@ -1,4 +1,4 @@
-package com.ajaxproject.financeservice.configuration
+package com.ajaxproject.financeservice.finance.infrastructure.configuration.nats
 
 import io.nats.client.Connection
 import io.nats.client.Nats
