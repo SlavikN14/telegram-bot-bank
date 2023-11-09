@@ -1,8 +1,8 @@
-package com.ajaxproject.financeservice.service
+package com.ajaxproject.financeservice.finance.application.service
 
-import com.ajaxproject.financeservice.model.MongoFinance
-import com.ajaxproject.financeservice.repository.FinanceRepository
-import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
+import com.ajaxproject.financeservice.finance.application.ports.FinanceRepositoryOutPort
+import com.ajaxproject.financeservice.finance.application.ports.FinanceServiceInPort
+import com.ajaxproject.financeservice.finance.domain.Finance
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -13,22 +13,22 @@ import reactor.kotlin.core.util.function.component2
 
 @Service
 class FinanceService(
-    private val financeRepositoryImpl: FinanceRepository,
-) {
+    private val financeRepositoryImpl: FinanceRepositoryOutPort,
+) : FinanceServiceInPort {
 
-    fun getAllFinancesByUserId(userId: Long, financeType: FinanceType): Flux<MongoFinance> {
+    override fun getAllFinancesByUserId(userId: Long, financeType: String): Flux<Finance> {
         return financeRepositoryImpl.findByUserIdAndFinanceType(userId, financeType)
     }
 
-    fun addFinance(finance: MongoFinance): Mono<MongoFinance> {
+    override fun saveFinance(finance: Finance): Mono<Finance> {
         return financeRepositoryImpl.save(finance)
     }
 
-    fun removeAllFinancesByUserId(userId: Long): Mono<Unit> {
+    override fun removeAllFinancesByUserId(userId: Long): Mono<Unit> {
         return financeRepositoryImpl.removeAllById(userId)
     }
 
-    fun getCurrentBalance(userId: Long): Mono<Double> {
+    override fun getCurrentBalance(userId: Long): Mono<Double> {
         return Mono.zip(
             getAllIncomesByUserId(userId),
             getAllExpensesByUserId(userId)
@@ -37,13 +37,13 @@ class FinanceService(
     }
 
     private fun getAllIncomesByUserId(userId: Long): Mono<Double> {
-        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, FinanceType.INCOME)
+        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, "INCOME")
             .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }
 
     private fun getAllExpensesByUserId(userId: Long): Mono<Double> {
-        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, FinanceType.EXPENSE)
+        return financeRepositoryImpl.findByUserIdAndFinanceType(userId, "EXPENSE")
             .reduceWith({ 0.0 }) { acc, finance -> acc + finance.amount }
             .switchIfEmpty { 0.0.toMono() }
     }
