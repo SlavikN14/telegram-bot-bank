@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.ajaxproject.internalapi.finance.svc.currency_service.proto;
+
+import "com/ajaxproject/internalapi/finance/input/reqreply/stream_by_code.proto";
+
+option java_multiple_files = true;
+
+service CurrencyService {
+
+  rpc streamCurrencyByCode (com.ajaxproject.api.internalapi.finance.input.reqreply.StreamCurrencyByCodeRequest)
+      returns (stream com.ajaxproject.api.internalapi.finance.input.reqreply.StreamCurrencyByCodeResponse);
+}
