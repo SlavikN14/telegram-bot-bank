@@ -16,7 +16,7 @@ class MonobankClient(
     private val webClient: WebClient,
 ) {
 
-    @Scheduled(initialDelay = 30_000, fixedRate = 300_000)
+    @Scheduled(initialDelay = 15_000, fixedRate = 300_000)
     fun getCurrencyExchangeRates() {
         webClient.get()
             .retrieve()
