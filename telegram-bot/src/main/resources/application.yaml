@@ -30,3 +30,9 @@ nats:
 redis-properties:
   ttl-minutes: 5
   prefix-key: currency-key-
+
+grpc:
+  server:
+    port: 9091
+    security:
+      enabled: false
