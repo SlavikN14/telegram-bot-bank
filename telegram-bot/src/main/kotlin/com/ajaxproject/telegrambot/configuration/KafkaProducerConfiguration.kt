@@ -12,7 +12,7 @@ import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderOptions
 
 @Configuration
-class KafkaConfiguration(
+class KafkaProducerConfiguration(
     @Value("\${spring.kafka.bootstrap-servers}") private val bootstrapServers: String,
     @Value("\${spring.kafka.properties.schema.registry.url}") private val schemaRegistryUrl: String
 ) {
