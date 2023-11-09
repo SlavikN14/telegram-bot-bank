@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono
 
 interface CurrencyRepository {
 
-    fun findAllByCode(code: Int): Flux<MongoCurrency>
+    fun findByCode(code: Int): Mono<MongoCurrency>
 
     fun findAll(): Flux<MongoCurrency>
 
