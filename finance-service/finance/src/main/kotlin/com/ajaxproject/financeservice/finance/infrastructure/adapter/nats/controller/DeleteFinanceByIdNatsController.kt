@@ -1,8 +1,8 @@
-package com.ajaxproject.financeservice.controller.finance
+package com.ajaxproject.financeservice.finance.infrastructure.adapter.nats.controller
 
-import com.ajaxproject.financeservice.controller.NatsController
-import com.ajaxproject.financeservice.service.FinanceService
-import com.ajaxproject.financeservice.service.toUnknownError
+import com.ajaxproject.financeservice.finance.application.ports.FinanceServiceInPort
+import com.ajaxproject.financeservice.finance.application.service.toUnknownError
+import com.ajaxproject.financeservice.finance.infrastructure.adapter.nats.NatsController
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.DeleteFinanceByIdResponse
@@ -13,7 +13,7 @@ import reactor.kotlin.core.publisher.toMono
 
 @Component
 class DeleteFinanceByIdNatsController(
-    private val financeService: FinanceService,
+    private val financeService: FinanceServiceInPort,
 ) : NatsController<DeleteFinanceByIdRequest, DeleteFinanceByIdResponse> {
 
     override val subject: String = NatsSubject.FinanceRequest.DELETE_FINANCE

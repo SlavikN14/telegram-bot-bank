@@ -1,4 +1,4 @@
-package com.ajaxproject.financeservice.controller
+package com.ajaxproject.financeservice.finance.infrastructure.adapter.nats
 
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser

@@ -1,10 +1,10 @@
-package com.ajaxproject.financeservice.controller.finance
+package com.ajaxproject.financeservice.finance.infrastructure.adapter.nats.controller
 
-import com.ajaxproject.financeservice.controller.NatsController
-import com.ajaxproject.financeservice.model.toMongoFinance
-import com.ajaxproject.financeservice.model.toProtoFinance
-import com.ajaxproject.financeservice.service.FinanceService
-import com.ajaxproject.financeservice.service.toUnknownError
+import com.ajaxproject.financeservice.finance.application.ports.FinanceServiceInPort
+import com.ajaxproject.financeservice.finance.application.service.toUnknownError
+import com.ajaxproject.financeservice.finance.infrastructure.adapter.nats.NatsController
+import com.ajaxproject.financeservice.finance.infrastructure.mapper.toEntityFinance
+import com.ajaxproject.financeservice.finance.infrastructure.mapper.toProtoFinance
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
@@ -16,7 +16,7 @@ import reactor.kotlin.core.publisher.toMono
 
 @Component
 class CreateFinanceNatsController(
-    private val financeService: FinanceService,
+    private val financeService: FinanceServiceInPort,
 ) : NatsController<CreateFinanceRequest, CreateFinanceResponse> {
 
     override val subject: String = NatsSubject.FinanceRequest.CREATE_FINANCE
@@ -24,7 +24,7 @@ class CreateFinanceNatsController(
     override val parser: Parser<CreateFinanceRequest> = CreateFinanceRequest.parser()
 
     override fun handle(request: CreateFinanceRequest): Mono<CreateFinanceResponse> {
-        return financeService.addFinance(request.finance.toMongoFinance())
+        return financeService.saveFinance(request.finance.toEntityFinance())
             .map { buildSuccessResponse(it.toProtoFinance()) }
             .onErrorResume {
                 buildFailureResponse(it.message.toUnknownError()).toMono()
