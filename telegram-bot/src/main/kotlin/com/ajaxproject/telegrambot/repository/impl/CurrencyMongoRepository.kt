@@ -14,11 +14,11 @@ class CurrencyMongoRepository(
     private val mongoTemplate: ReactiveMongoTemplate,
 ) : CurrencyRepository {
 
-    override fun findAllByCode(code: Int): Flux<MongoCurrency> {
+    override fun findByCode(code: Int): Mono<MongoCurrency> {
         val query: Query = Query().addCriteria(
             Criteria.where("currencyCodeA").`is`(code)
         )
-        return mongoTemplate.find(query, MongoCurrency::class.java, MongoCurrency.COLLECTION_NAME)
+        return mongoTemplate.findOne(query, MongoCurrency::class.java, MongoCurrency.COLLECTION_NAME)
     }
 
     override fun findAll(): Flux<MongoCurrency> =

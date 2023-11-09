@@ -21,12 +21,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("org.springframework.kafka:spring-kafka:3.0.12")
 
-    implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
+    implementation("net.devh:grpc-spring-boot-starter:2.15.0.RELEASE")
     implementation("org.apache.kafka:kafka-clients:3.6.0")
     implementation("io.confluent:kafka-protobuf-serializer:7.5.1")
 
+    implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
-    implementation("io.projectreactor:reactor-core")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     testImplementation("io.projectreactor:reactor-test")

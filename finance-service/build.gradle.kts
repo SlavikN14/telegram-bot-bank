@@ -13,7 +13,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("io.projectreactor:reactor-core:3.5.11")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
 
     testImplementation("io.projectreactor:reactor-test:3.5.11")

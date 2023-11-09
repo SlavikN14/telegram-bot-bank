@@ -7,11 +7,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Primary
 import org.springframework.data.redis.core.ReactiveRedisTemplate
-import org.springframework.data.redis.core.ScanOptions
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.switchIfEmptyDeferred
+import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Duration
 
 @Primary
@@ -23,17 +21,11 @@ class CurrencyRedisRepository(
     private val redisProperties: RedisProperties,
 ) : CurrencyRepository by currencyRepository {
 
-    override fun findAllByCode(code: Int): Flux<MongoCurrency> {
-        return reactiveRedisTemplate.scan(
-            ScanOptions
-                .scanOptions()
-                .match("${redisProperties.prefixKey}$code-*")
-                .build()
-        )
-            .flatMap { reactiveRedisTemplate.opsForValue().get(it) }
-            .switchIfEmptyDeferred {
+    override fun findByCode(code: Int): Mono<MongoCurrency> {
+        return reactiveRedisTemplate.opsForValue().get("${redisProperties.prefixKey}$code")
+            .switchIfEmpty {
                 log.info("Cache miss for currency code: {}", code)
-                currencyRepository.findAllByCode(code)
+                currencyRepository.findByCode(code)
                     .flatMap { currency ->
                         saveToCache(currency)
                     }
@@ -48,7 +40,7 @@ class CurrencyRedisRepository(
     private fun saveToCache(currency: MongoCurrency): Mono<MongoCurrency> {
         return reactiveRedisTemplate.opsForValue()
             .set(
-                "${redisProperties.prefixKey}${currency.currencyCodeA}-${currency.currencyCodeB}",
+                "${redisProperties.prefixKey}${currency.currencyCodeA}",
                 currency,
                 Duration.ofMinutes(redisProperties.ttlMinutes.toLong())
             )
