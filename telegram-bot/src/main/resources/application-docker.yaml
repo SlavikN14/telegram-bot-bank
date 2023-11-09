@@ -1,7 +1,23 @@
 spring:
   data:
+
     mongodb:
       uri: mongodb://mongo:27017/telegram_bot_db
 
+    redis:
+      port: 6379
+      host: redis
+
+  kafka:
+    bootstrap-servers: http://kafka:29092
+    properties:
+      schema:
+        registry:
+          url: http://schema-registry:8081
+
 nats:
   url: nats://nats:4222
+
+redis-properties:
+  ttl-minutes: 5
+  prefix-key: currency-key-

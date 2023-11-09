@@ -1,9 +1,8 @@
 package com.ajaxproject.financeservice.controller.finance
 
 import com.ajaxproject.financeservice.controller.NatsController
+import com.ajaxproject.financeservice.model.toProtoFinance
 import com.ajaxproject.financeservice.service.FinanceService
-import com.ajaxproject.financeservice.service.toFinanceEnum
-import com.ajaxproject.financeservice.service.toProtoFinance
 import com.ajaxproject.financeservice.service.toUnknownError
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
@@ -24,7 +23,7 @@ class GetAllFinancesByIdNatsController(
     override val parser: Parser<GetAllFinancesByIdRequest> = GetAllFinancesByIdRequest.parser()
 
     override fun handle(request: GetAllFinancesByIdRequest): Mono<GetAllFinancesByIdResponse> {
-        return financeService.getAllFinancesByUserId(request.userId, request.financeType.toFinanceEnum())
+        return financeService.getAllFinancesByUserId(request.userId, request.financeType)
             .map { it.toProtoFinance() }
             .collectList()
             .map { buildSuccessResponse(it) }

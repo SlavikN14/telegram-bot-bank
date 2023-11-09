@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.ajaxproject.internalapi.finance.output.pubsub;
+
+option java_multiple_files = true;
+
+import "com/ajaxproject/internalapi/finance/commonmodels/currency.proto";
+
+message CurrencyUpdatedEvent{
+  commonmodels.Currency currency = 1;
+}
