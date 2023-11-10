@@ -1,9 +1,10 @@
 package com.ajaxproject.financeservice
 
-import com.ajaxproject.financeservice.repository.FinanceRepositoryImpl
+import com.ajaxproject.financeservice.finance.infrastructure.mapper.toEntityFinance
+import com.ajaxproject.financeservice.finance.infrastructure.mapper.toProtoFinance
+import com.ajaxproject.financeservice.finance.infrastructure.repository.mongo.MongoFinanceRepository
 import com.ajaxproject.internalapi.NatsSubject
-import com.ajaxproject.financeservice.model.MongoFinance
-import com.ajaxproject.financeservice.model.toProtoFinance
+import com.ajaxproject.financeservice.finance.infrastructure.repository.mongo.entity.MongoFinance
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceType
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceRequest
 import com.ajaxproject.internalapi.finance.input.reqreply.CreateFinanceResponse
@@ -39,7 +40,7 @@ class NatsControllerTest {
     private lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    private lateinit var financeRepository: FinanceRepositoryImpl
+    private lateinit var financeRepository: MongoFinanceRepository
 
     @AfterEach
     fun clean() {
@@ -62,7 +63,7 @@ class NatsControllerTest {
     @Test
     fun `should return expected finance when get all finance by request`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance).block()
+        financeRepository.save(testMongoIncomeFinance.toEntityFinance()).block()
         val userIdSave = testMongoIncomeFinance.userId
         val financeTypeSave = testMongoIncomeFinance.financeType
 
@@ -72,7 +73,7 @@ class NatsControllerTest {
             .build()
 
         val expectedResponse = GetAllFinancesByIdResponse.newBuilder().apply {
-            successBuilder.addAllFinance(listOf(testMongoIncomeFinance.toProtoFinance()))
+            successBuilder.addAllFinance(listOf(testMongoIncomeFinance.toEntityFinance().toProtoFinance()))
         }.build()
 
         //WHEN
@@ -89,7 +90,7 @@ class NatsControllerTest {
     @Test
     fun `should return expected message when delete finance`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance).block()
+        financeRepository.save(testMongoIncomeFinance.toEntityFinance()).block()
         val financeId = testMongoIncomeFinance.userId
 
         val request: DeleteFinanceByIdRequest = DeleteFinanceByIdRequest.newBuilder()
@@ -114,14 +115,14 @@ class NatsControllerTest {
     @Test
     fun `should return expected finance when save finance`() {
         //GIVEN
-        financeRepository.save(testMongoIncomeFinance).block()
+        financeRepository.save(testMongoIncomeFinance.toEntityFinance()).block()
 
         val request: CreateFinanceRequest = CreateFinanceRequest.newBuilder()
-            .setFinance(testMongoIncomeFinance.toProtoFinance())
+            .setFinance(testMongoIncomeFinance.toEntityFinance().toProtoFinance())
             .build()
 
         val expectedResponse = CreateFinanceResponse.newBuilder().apply {
-            successBuilder.setFinance(testMongoIncomeFinance.toProtoFinance())
+            successBuilder.setFinance(testMongoIncomeFinance.toEntityFinance().toProtoFinance())
         }.build()
 
         //WHEN
@@ -147,8 +148,8 @@ class NatsControllerTest {
             date = Date()
         )
         financeRepository.run {
-            save(testExpenseFinance).block()
-            save(testMongoIncomeFinance).block()
+            save(testExpenseFinance.toEntityFinance()).block()
+            save(testMongoIncomeFinance.toEntityFinance()).block()
         }
         val userIdSave = testMongoIncomeFinance.userId
 

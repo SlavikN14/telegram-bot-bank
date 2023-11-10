@@ -1,9 +1,10 @@
-package com.ajaxproject.financeservice.controller.finance
+package com.ajaxproject.financeservice.finance.infrastructure.adapter.nats.controller
 
-import com.ajaxproject.financeservice.controller.NatsController
-import com.ajaxproject.financeservice.model.toProtoFinance
-import com.ajaxproject.financeservice.service.FinanceService
-import com.ajaxproject.financeservice.service.toUnknownError
+import com.ajaxproject.financeservice.finance.application.ports.FinanceServiceInPort
+import com.ajaxproject.financeservice.finance.application.service.toUnknownError
+import com.ajaxproject.financeservice.finance.infrastructure.adapter.nats.NatsController
+import com.ajaxproject.financeservice.finance.infrastructure.mapper.toEntityFinanceType
+import com.ajaxproject.financeservice.finance.infrastructure.mapper.toProtoFinance
 import com.ajaxproject.internalapi.NatsSubject
 import com.ajaxproject.internalapi.finance.commonmodels.FinanceMessage
 import com.ajaxproject.internalapi.finance.input.reqreply.GetAllFinancesByIdRequest
@@ -15,7 +16,7 @@ import reactor.kotlin.core.publisher.toMono
 
 @Component
 class GetAllFinancesByIdNatsController(
-    private val financeService: FinanceService,
+    private val financeService: FinanceServiceInPort,
 ) : NatsController<GetAllFinancesByIdRequest, GetAllFinancesByIdResponse> {
 
     override val subject: String = NatsSubject.FinanceRequest.GET_ALL_FINANCES_BY_ID
@@ -23,7 +24,7 @@ class GetAllFinancesByIdNatsController(
     override val parser: Parser<GetAllFinancesByIdRequest> = GetAllFinancesByIdRequest.parser()
 
     override fun handle(request: GetAllFinancesByIdRequest): Mono<GetAllFinancesByIdResponse> {
-        return financeService.getAllFinancesByUserId(request.userId, request.financeType)
+        return financeService.getAllFinancesByUserId(request.userId, request.financeType.toEntityFinanceType())
             .map { it.toProtoFinance() }
             .collectList()
             .map { buildSuccessResponse(it) }
