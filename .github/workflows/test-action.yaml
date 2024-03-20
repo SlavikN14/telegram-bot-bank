@@ -1,7 +1,7 @@
 name: Create Release Branch Composite
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-on: workflow_dispatch
+on: push
 jobs:
   createrelease:
     runs-on: ubuntu-latest
